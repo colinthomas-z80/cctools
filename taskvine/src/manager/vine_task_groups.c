@@ -17,6 +17,7 @@ static int vine_task_groups_create_group(struct vine_manager *q, struct vine_tas
 	struct list *l = list_create();
 
 	t->group_id = id;
+	t->priority = 100;
 
 	struct vine_task *tc = vine_task_addref(t);
 

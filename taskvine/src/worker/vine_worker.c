@@ -1768,7 +1768,7 @@ static void vine_worker_serve_manager(struct link *manager)
 			if (vine_watcher_check(watcher)) {
 				send_async_message(manager, "available_results\n");
 			}
-			if (itable_size(procs_complete) > 0) {
+			if (itable_size(procs_complete) > 0){// && itable_size(procs_running) == 0) {
 				send_complete_tasks(manager);
 			}
 			if (task_event > 0) {

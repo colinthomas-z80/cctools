@@ -1,0 +1,748 @@
+2024/12/02 11:06:13.91 vine_worker[126870] debug: ./vine_worker version 8.0.0 DEVELOPMENT (released 2024-12-02 09:41:16 -0500)
+2024/12/02 11:06:13.91 vine_worker[126870] debug: Built by cthoma26@condorfe.crc.nd.edu on 2024-12-02 09:41:16 -0500
+2024/12/02 11:06:13.91 vine_worker[126870] debug: System: Linux condorfe.crc.nd.edu 5.14.0-503.15.1.el9_5.x86_64 #1 SMP PREEMPT_DYNAMIC Thu Nov 14 15:45:31 EST 2024 x86_64 x86_64 x86_64 GNU/Linux
+2024/12/02 11:06:13.91 vine_worker[126870] debug: Configuration: --with-base-dir /project01/ndcms/cthoma26/miniconda3/envs/parsldockenv --prefix /project01/ndcms/cthoma26/miniconda3/envs/parsldockenv
+2024/12/02 11:06:13.91 vine_worker[126870] dns: looking up name condorfe.crc.nd.edu
+2024/12/02 11:06:13.92 vine_worker[126870] dns: condorfe.crc.nd.edu is 10.32.85.31
+2024/12/02 11:06:13.92 vine_worker[126870] tcp: connecting to 10.32.85.31 port 9285
+2024/12/02 11:06:13.92 vine_worker[126870] tcp: connection to 10.32.85.31 port 9285 failed (Connection refused)
+2024/12/02 11:06:13.92 vine_worker[126870] tcp: disconnected from 10.32.85.31 port 9285
+2024/12/02 11:06:15.92 vine_worker[126870] tcp: connecting to 10.32.85.31 port 9285
+2024/12/02 11:06:15.92 vine_worker[126870] tcp: connection to 10.32.85.31 port 9285 failed (Connection refused)
+2024/12/02 11:06:15.92 vine_worker[126870] tcp: disconnected from 10.32.85.31 port 9285
+2024/12/02 11:06:19.92 vine_worker[126870] tcp: connecting to 10.32.85.31 port 9285
+2024/12/02 11:06:19.92 vine_worker[126870] tcp: connection to 10.32.85.31 port 9285 failed (Connection refused)
+2024/12/02 11:06:19.92 vine_worker[126870] tcp: disconnected from 10.32.85.31 port 9285
+2024/12/02 11:06:27.92 vine_worker[126870] tcp: connecting to 10.32.85.31 port 9285
+2024/12/02 11:06:27.92 vine_worker[126870] tcp: made connection to 10.32.85.31 port 9285
+2024/12/02 11:06:27.92 vine_worker[126870] vine: connected to manager condorfe.crc.nd.edu:9285 via local address 10.32.85.31:54910
+2024/12/02 11:06:27.92 vine_worker[126870] vine: preparing workspace /tmp/worker-238401-126870
+2024/12/02 11:06:27.92 vine_worker[126870] vine: loading cache at: /tmp/worker-238401-126870/cache
+2024/12/02 11:06:27.92 vine_worker[126870] tcp: listening on port 1024
+2024/12/02 11:06:27.92 vine_worker[126870] vine: started transfer server pid 126884 listening on 0.0.0.0:1024
+2024/12/02 11:06:27.92 vine_worker[126870] dns: looking up addr 10.32.85.31
+2024/12/02 11:06:27.92 vine_worker[126870] dns: 10.32.85.31 is condorfe.crc.nd.edu
+2024/12/02 11:06:27.92 vine_worker[126870] dns: finding my hostname: uname = condorfe.crc.nd.edu, address = 10.32.85.31, hostname = condorfe.crc.nd.edu
+2024/12/02 11:06:27.92 vine_worker[126870] vine: tx: taskvine 12 condorfe.crc.nd.edu Linux x86_64 8.0.0
+2024/12/02 11:06:27.92 vine_worker[126870] vine: tx: info worker-id worker-5383be2971c485b85dca46e339e4ea21
+2024/12/02 11:06:27.92 vine_worker[126870] vine: tx: transfer-port 1024
+2024/12/02 11:06:27.92 vine_worker[126870] vine: tx: info worker-end-time 0
+2024/12/02 11:06:27.92 vine_worker[126870] vine: tx: alive
+2024/12/02 11:06:27.92 vine_worker[126870] vine: Sending resource description to manager:
+2024/12/02 11:06:27.92 vine_worker[126870] vine:    cores      0 inuse     24 total
+2024/12/02 11:06:27.92 vine_worker[126870] vine:   memory      0 inuse   4096 total
+2024/12/02 11:06:27.92 vine_worker[126870] vine:     disk      0 inuse  20000 total
+2024/12/02 11:06:27.92 vine_worker[126870] vine:     gpus      0 inuse      0 total
+2024/12/02 11:06:27.92 vine_worker[126870] vine:  workers      0 inuse      1 total
+2024/12/02 11:06:27.92 vine_worker[126870] vine: working for manager at 10.32.85.31:9285.
+2024/12/02 11:06:27.92 vine_worker[126870] vine: rx: put file-meta-5afac46a2a071d24e20268ab16cafa27 1 7085
+2024/12/02 11:06:27.92 vine_worker[126870] vine: rx: file file-meta-5afac46a2a071d24e20268ab16cafa27 7085 0644 1733152715
+2024/12/02 11:06:27.92 vine_worker[126870] vine: rx: put file-meta-73367187ad5fab8b558a77e1f6b46eb0 0 2523
+2024/12/02 11:06:27.92 vine_worker[126870] vine: rx: file file-meta-73367187ad5fab8b558a77e1f6b46eb0 2523 0644 1733155579
+2024/12/02 11:06:27.92 vine_worker[126870] vine: rx: put file-meta-14256e7b660d64efc8871d76583f4df0 0 291
+2024/12/02 11:06:27.92 vine_worker[126870] vine: rx: file file-meta-14256e7b660d64efc8871d76583f4df0 291 0644 1733155579
+2024/12/02 11:06:27.92 vine_worker[126870] vine: rx: put file-meta-06787ca09b3cb09af9a2878aedf7b736 0 45
+2024/12/02 11:06:27.92 vine_worker[126870] vine: rx: file file-meta-06787ca09b3cb09af9a2878aedf7b736 45 0644 1733155579
+2024/12/02 11:06:27.92 vine_worker[126870] vine: rx: task 1
+2024/12/02 11:06:27.92 vine_worker[126870] vine: rx: cmd 59
+2024/12/02 11:06:27.92 vine_worker[126870] vine: rx: python3 exec_parsl_function.py map function argument result
+2024/12/02 11:06:27.92 vine_worker[126870] vine: rx: category f1
+2024/12/02 11:06:27.92 vine_worker[126870] vine: rx: cores 12.000
+2024/12/02 11:06:27.92 vine_worker[126870] vine: rx: gpus 0
+2024/12/02 11:06:27.92 vine_worker[126870] vine: rx: memory 1024
+2024/12/02 11:06:27.92 vine_worker[126870] vine: rx: disk 10000
+2024/12/02 11:06:27.92 vine_worker[126870] vine: rx: infile file-meta-5afac46a2a071d24e20268ab16cafa27 exec_parsl_function.py 0
+2024/12/02 11:06:27.92 vine_worker[126870] vine: rx: infile file-meta-73367187ad5fab8b558a77e1f6b46eb0 function 0
+2024/12/02 11:06:27.92 vine_worker[126870] vine: rx: infile file-meta-14256e7b660d64efc8871d76583f4df0 argument 0
+2024/12/02 11:06:27.92 vine_worker[126870] vine: rx: infile file-meta-06787ca09b3cb09af9a2878aedf7b736 map 0
+2024/12/02 11:06:27.92 vine_worker[126870] vine: rx: outfile file-rnd-funyjbtmbdfewkc result 0
+2024/12/02 11:06:27.92 vine_worker[126870] vine: rx: outfile temp-rnd-vipbrtzkbngixuk file1-0 0
+2024/12/02 11:06:27.92 vine_worker[126870] vine: rx: end
+2024/12/02 11:06:27.92 vine_worker[126870] vine: input: link /tmp/worker-238401-126870/cache/file-meta-5afac46a2a071d24e20268ab16cafa27 -> /tmp/worker-238401-126870/task.1/exec_parsl_function.py
+2024/12/02 11:06:27.92 vine_worker[126870] vine: input: link /tmp/worker-238401-126870/cache/file-meta-73367187ad5fab8b558a77e1f6b46eb0 -> /tmp/worker-238401-126870/task.1/function
+2024/12/02 11:06:27.92 vine_worker[126870] vine: input: link /tmp/worker-238401-126870/cache/file-meta-14256e7b660d64efc8871d76583f4df0 -> /tmp/worker-238401-126870/task.1/argument
+2024/12/02 11:06:27.92 vine_worker[126870] vine: input: link /tmp/worker-238401-126870/cache/file-meta-06787ca09b3cb09af9a2878aedf7b736 -> /tmp/worker-238401-126870/task.1/map
+2024/12/02 11:06:27.92 vine_worker[126870] vine: started task 1 pid 126885: python3 exec_parsl_function.py map function argument result
+2024/12/02 11:06:27.92 vine_worker[126870] vine: tx: info tasks_running 1
+2024/12/02 11:06:29.03 vine_worker[126870] vine: (MOD) task 1 (pid 126885) exited normally with exit code 0
+2024/12/02 11:06:29.03 vine_worker[126870] vine: output: measuring /tmp/worker-238401-126870/task.1/result
+2024/12/02 11:06:29.03 vine_worker[126870] vine: output: moving /tmp/worker-238401-126870/task.1/result to /tmp/worker-238401-126870/cache/file-rnd-funyjbtmbdfewkc
+2024/12/02 11:06:29.03 vine_worker[126870] vine: tx: cache-update file-rnd-funyjbtmbdfewkc 1 0 8 33188 1103278 1733155587927922 X
+2024/12/02 11:06:29.03 vine_worker[126870] vine: output: measuring /tmp/worker-238401-126870/task.1/file1-0
+2024/12/02 11:06:29.03 vine_worker[126870] vine: output: moving /tmp/worker-238401-126870/task.1/file1-0 to /tmp/worker-238401-126870/cache/temp-rnd-vipbrtzkbngixuk
+2024/12/02 11:06:29.03 vine_worker[126870] vine: tx: cache-update temp-rnd-vipbrtzkbngixuk 1 0 1000000 33188 1103278 1733155587927922 X
+2024/12/02 11:06:29.03 vine_worker[126870] vine: tx: complete 0 0 94 94 1733155587927922 1733155589031200 0 1
+1+0 records in
+1+0 records out
+1000000 bytes (1.0 MB, 977 KiB) copied, 0.00112753 s, 887 MB/s
+2024/12/02 11:06:29.03 vine_worker[126870] vine: rx: get file-rnd-funyjbtmbdfewkc
+2024/12/02 11:06:29.03 vine_worker[126870] vine: tx: file file-rnd-funyjbtmbdfewkc 8 0644 1733155588
+2024/12/02 11:06:29.03 vine_worker[126870] vine: rx: unlink file-meta-73367187ad5fab8b558a77e1f6b46eb0
+2024/12/02 11:06:29.03 vine_worker[126870] debug: trashing file /tmp/worker-238401-126870/cache/file-meta-73367187ad5fab8b558a77e1f6b46eb0
+2024/12/02 11:06:29.03 vine_worker[126870] debug: trashing file /tmp/worker-238401-126870/cache/file-meta-73367187ad5fab8b558a77e1f6b46eb0.meta
+2024/12/02 11:06:29.03 vine_worker[126870] vine: rx: unlink file-meta-14256e7b660d64efc8871d76583f4df0
+2024/12/02 11:06:29.03 vine_worker[126870] debug: trashing file /tmp/worker-238401-126870/cache/file-meta-14256e7b660d64efc8871d76583f4df0
+2024/12/02 11:06:29.03 vine_worker[126870] debug: trashing file /tmp/worker-238401-126870/cache/file-meta-14256e7b660d64efc8871d76583f4df0.meta
+2024/12/02 11:06:29.03 vine_worker[126870] vine: rx: unlink file-meta-06787ca09b3cb09af9a2878aedf7b736
+2024/12/02 11:06:29.03 vine_worker[126870] debug: trashing file /tmp/worker-238401-126870/cache/file-meta-06787ca09b3cb09af9a2878aedf7b736
+2024/12/02 11:06:29.03 vine_worker[126870] debug: trashing file /tmp/worker-238401-126870/cache/file-meta-06787ca09b3cb09af9a2878aedf7b736.meta
+2024/12/02 11:06:29.03 vine_worker[126870] vine: rx: unlink file-rnd-funyjbtmbdfewkc
+2024/12/02 11:06:29.03 vine_worker[126870] debug: trashing file /tmp/worker-238401-126870/cache/file-rnd-funyjbtmbdfewkc
+2024/12/02 11:06:29.03 vine_worker[126870] debug: trashing file /tmp/worker-238401-126870/cache/file-rnd-funyjbtmbdfewkc.meta
+2024/12/02 11:06:29.03 vine_worker[126870] vine: rx: kill 1
+2024/12/02 11:06:29.03 vine_worker[126870] debug: trashing file /tmp/worker-238401-126870/task.1
+2024/12/02 11:06:29.03 vine_worker[126870] vine: rx: put file-meta-707bd14ec43afa089d931f8b1162978f 0 2539
+2024/12/02 11:06:29.03 vine_worker[126870] vine: rx: file file-meta-707bd14ec43afa089d931f8b1162978f 2539 0644 1733155579
+2024/12/02 11:06:29.03 vine_worker[126870] vine: rx: put file-meta-3605afae6704cf68bdf0eb190c06cc78 0 395
+2024/12/02 11:06:29.03 vine_worker[126870] vine: rx: file file-meta-3605afae6704cf68bdf0eb190c06cc78 395 0644 1733155579
+2024/12/02 11:06:29.03 vine_worker[126870] vine: rx: put file-meta-4f4eaf40b65cbf4d18f4a70afc137faa 0 75
+2024/12/02 11:06:29.03 vine_worker[126870] vine: rx: file file-meta-4f4eaf40b65cbf4d18f4a70afc137faa 75 0644 1733155579
+2024/12/02 11:06:29.03 vine_worker[126870] vine: rx: task 2
+2024/12/02 11:06:29.03 vine_worker[126870] vine: rx: cmd 59
+2024/12/02 11:06:29.03 vine_worker[126870] vine: rx: python3 exec_parsl_function.py map function argument result
+2024/12/02 11:06:29.03 vine_worker[126870] vine: rx: category f2
+2024/12/02 11:06:29.03 vine_worker[126870] vine: rx: cores 12.000
+2024/12/02 11:06:29.03 vine_worker[126870] vine: rx: gpus 0
+2024/12/02 11:06:29.03 vine_worker[126870] vine: rx: memory 1024
+2024/12/02 11:06:29.03 vine_worker[126870] vine: rx: disk 10000
+2024/12/02 11:06:29.03 vine_worker[126870] vine: rx: infile file-meta-5afac46a2a071d24e20268ab16cafa27 exec_parsl_function.py 0
+2024/12/02 11:06:29.03 vine_worker[126870] vine: rx: infile file-meta-707bd14ec43afa089d931f8b1162978f function 0
+2024/12/02 11:06:29.03 vine_worker[126870] vine: rx: infile file-meta-3605afae6704cf68bdf0eb190c06cc78 argument 0
+2024/12/02 11:06:29.03 vine_worker[126870] vine: rx: infile file-meta-4f4eaf40b65cbf4d18f4a70afc137faa map 0
+2024/12/02 11:06:29.03 vine_worker[126870] vine: rx: infile temp-rnd-vipbrtzkbngixuk file1-0 0
+2024/12/02 11:06:29.03 vine_worker[126870] vine: rx: outfile file-rnd-nmmbeksfbrancoh result 0
+2024/12/02 11:06:29.03 vine_worker[126870] vine: rx: outfile temp-rnd-uktapqtoenyeeyr file1-0-0 0
+2024/12/02 11:06:29.03 vine_worker[126870] vine: rx: end
+2024/12/02 11:06:29.03 vine_worker[126870] vine: input: link /tmp/worker-238401-126870/cache/file-meta-5afac46a2a071d24e20268ab16cafa27 -> /tmp/worker-238401-126870/task.2/exec_parsl_function.py
+2024/12/02 11:06:29.03 vine_worker[126870] vine: input: link /tmp/worker-238401-126870/cache/file-meta-707bd14ec43afa089d931f8b1162978f -> /tmp/worker-238401-126870/task.2/function
+2024/12/02 11:06:29.03 vine_worker[126870] vine: input: link /tmp/worker-238401-126870/cache/file-meta-3605afae6704cf68bdf0eb190c06cc78 -> /tmp/worker-238401-126870/task.2/argument
+2024/12/02 11:06:29.03 vine_worker[126870] vine: input: link /tmp/worker-238401-126870/cache/file-meta-4f4eaf40b65cbf4d18f4a70afc137faa -> /tmp/worker-238401-126870/task.2/map
+2024/12/02 11:06:29.03 vine_worker[126870] vine: input: link /tmp/worker-238401-126870/cache/temp-rnd-vipbrtzkbngixuk -> /tmp/worker-238401-126870/task.2/file1-0
+2024/12/02 11:06:29.03 vine_worker[126870] vine: started task 2 pid 126893: python3 exec_parsl_function.py map function argument result
+2024/12/02 11:06:29.03 vine_worker[126870] vine: tx: info tasks_running 1
+2024/12/02 11:06:30.13 vine_worker[126870] vine: (MOD) task 2 (pid 126893) exited normally with exit code 0
+2024/12/02 11:06:30.13 vine_worker[126870] vine: output: measuring /tmp/worker-238401-126870/task.2/result
+2024/12/02 11:06:30.13 vine_worker[126870] vine: output: moving /tmp/worker-238401-126870/task.2/result to /tmp/worker-238401-126870/cache/file-rnd-nmmbeksfbrancoh
+2024/12/02 11:06:30.13 vine_worker[126870] vine: tx: cache-update file-rnd-nmmbeksfbrancoh 1 0 8 33188 1099097 1733155589034187 X
+2024/12/02 11:06:30.13 vine_worker[126870] vine: output: measuring /tmp/worker-238401-126870/task.2/file1-0-0
+2024/12/02 11:06:30.13 vine_worker[126870] vine: output: moving /tmp/worker-238401-126870/task.2/file1-0-0 to /tmp/worker-238401-126870/cache/temp-rnd-uktapqtoenyeeyr
+2024/12/02 11:06:30.13 vine_worker[126870] vine: tx: cache-update temp-rnd-uktapqtoenyeeyr 1 0 1000000 33188 1099097 1733155589034187 X
+2024/12/02 11:06:30.13 vine_worker[126870] vine: tx: complete 0 0 95 95 1733155589034187 1733155590133284 0 2
+1+0 records in
+1+0 records out
+1000000 bytes (1.0 MB, 977 KiB) copied, 0.000854977 s, 1.2 GB/s
+2024/12/02 11:06:30.13 vine_worker[126870] vine: rx: get file-rnd-nmmbeksfbrancoh
+2024/12/02 11:06:30.13 vine_worker[126870] vine: tx: file file-rnd-nmmbeksfbrancoh 8 0644 1733155590
+2024/12/02 11:06:30.13 vine_worker[126870] vine: rx: unlink file-meta-707bd14ec43afa089d931f8b1162978f
+2024/12/02 11:06:30.13 vine_worker[126870] debug: trashing file /tmp/worker-238401-126870/cache/file-meta-707bd14ec43afa089d931f8b1162978f
+2024/12/02 11:06:30.13 vine_worker[126870] debug: trashing file /tmp/worker-238401-126870/cache/file-meta-707bd14ec43afa089d931f8b1162978f.meta
+2024/12/02 11:06:30.13 vine_worker[126870] vine: rx: unlink file-meta-3605afae6704cf68bdf0eb190c06cc78
+2024/12/02 11:06:30.13 vine_worker[126870] debug: trashing file /tmp/worker-238401-126870/cache/file-meta-3605afae6704cf68bdf0eb190c06cc78
+2024/12/02 11:06:30.13 vine_worker[126870] debug: trashing file /tmp/worker-238401-126870/cache/file-meta-3605afae6704cf68bdf0eb190c06cc78.meta
+2024/12/02 11:06:30.13 vine_worker[126870] vine: rx: unlink file-meta-4f4eaf40b65cbf4d18f4a70afc137faa
+2024/12/02 11:06:30.13 vine_worker[126870] debug: trashing file /tmp/worker-238401-126870/cache/file-meta-4f4eaf40b65cbf4d18f4a70afc137faa
+2024/12/02 11:06:30.13 vine_worker[126870] debug: trashing file /tmp/worker-238401-126870/cache/file-meta-4f4eaf40b65cbf4d18f4a70afc137faa.meta
+2024/12/02 11:06:30.13 vine_worker[126870] vine: rx: unlink file-rnd-nmmbeksfbrancoh
+2024/12/02 11:06:30.13 vine_worker[126870] debug: trashing file /tmp/worker-238401-126870/cache/file-rnd-nmmbeksfbrancoh
+2024/12/02 11:06:30.13 vine_worker[126870] debug: trashing file /tmp/worker-238401-126870/cache/file-rnd-nmmbeksfbrancoh.meta
+2024/12/02 11:06:30.13 vine_worker[126870] vine: rx: kill 2
+2024/12/02 11:06:30.13 vine_worker[126870] debug: trashing file /tmp/worker-238401-126870/task.2
+2024/12/02 11:06:30.13 vine_worker[126870] vine: rx: put file-meta-a9298431b1b481d195f9061426189859 0 2539
+2024/12/02 11:06:30.13 vine_worker[126870] vine: rx: file file-meta-a9298431b1b481d195f9061426189859 2539 0644 1733155579
+2024/12/02 11:06:30.13 vine_worker[126870] vine: rx: put file-meta-167e37f979e463c921f3a1717bf53226 0 401
+2024/12/02 11:06:30.13 vine_worker[126870] vine: rx: file file-meta-167e37f979e463c921f3a1717bf53226 401 0644 1733155579
+2024/12/02 11:06:30.13 vine_worker[126870] vine: rx: put file-meta-5e1255bb676e7770fb3f7b0a09da198e 0 77
+2024/12/02 11:06:30.13 vine_worker[126870] vine: rx: file file-meta-5e1255bb676e7770fb3f7b0a09da198e 77 0644 1733155579
+2024/12/02 11:06:30.13 vine_worker[126870] vine: rx: task 3
+2024/12/02 11:06:30.13 vine_worker[126870] vine: rx: cmd 59
+2024/12/02 11:06:30.13 vine_worker[126870] vine: rx: python3 exec_parsl_function.py map function argument result
+2024/12/02 11:06:30.13 vine_worker[126870] vine: rx: category f2
+2024/12/02 11:06:30.13 vine_worker[126870] vine: rx: cores 12.000
+2024/12/02 11:06:30.13 vine_worker[126870] vine: rx: gpus 0
+2024/12/02 11:06:30.13 vine_worker[126870] vine: rx: memory 1024
+2024/12/02 11:06:30.13 vine_worker[126870] vine: rx: disk 10000
+2024/12/02 11:06:30.13 vine_worker[126870] vine: rx: infile file-meta-5afac46a2a071d24e20268ab16cafa27 exec_parsl_function.py 0
+2024/12/02 11:06:30.13 vine_worker[126870] vine: rx: infile file-meta-a9298431b1b481d195f9061426189859 function 0
+2024/12/02 11:06:30.13 vine_worker[126870] vine: rx: infile file-meta-167e37f979e463c921f3a1717bf53226 argument 0
+2024/12/02 11:06:30.13 vine_worker[126870] vine: rx: infile file-meta-5e1255bb676e7770fb3f7b0a09da198e map 0
+2024/12/02 11:06:30.13 vine_worker[126870] vine: rx: infile temp-rnd-uktapqtoenyeeyr file1-0-0 0
+2024/12/02 11:06:30.13 vine_worker[126870] vine: rx: outfile file-rnd-mzmrfgwtjkfibpx result 0
+2024/12/02 11:06:30.13 vine_worker[126870] vine: rx: outfile temp-rnd-wsrmzqwqcdacezt file2-0-1 0
+2024/12/02 11:06:30.13 vine_worker[126870] vine: rx: end
+2024/12/02 11:06:30.13 vine_worker[126870] vine: input: link /tmp/worker-238401-126870/cache/file-meta-5afac46a2a071d24e20268ab16cafa27 -> /tmp/worker-238401-126870/task.3/exec_parsl_function.py
+2024/12/02 11:06:30.13 vine_worker[126870] vine: input: link /tmp/worker-238401-126870/cache/file-meta-a9298431b1b481d195f9061426189859 -> /tmp/worker-238401-126870/task.3/function
+2024/12/02 11:06:30.13 vine_worker[126870] vine: input: link /tmp/worker-238401-126870/cache/file-meta-167e37f979e463c921f3a1717bf53226 -> /tmp/worker-238401-126870/task.3/argument
+2024/12/02 11:06:30.13 vine_worker[126870] vine: input: link /tmp/worker-238401-126870/cache/file-meta-5e1255bb676e7770fb3f7b0a09da198e -> /tmp/worker-238401-126870/task.3/map
+2024/12/02 11:06:30.13 vine_worker[126870] vine: input: link /tmp/worker-238401-126870/cache/temp-rnd-uktapqtoenyeeyr -> /tmp/worker-238401-126870/task.3/file1-0-0
+2024/12/02 11:06:30.13 vine_worker[126870] vine: started task 3 pid 126900: python3 exec_parsl_function.py map function argument result
+2024/12/02 11:06:30.13 vine_worker[126870] vine: tx: info tasks_running 1
+2024/12/02 11:06:31.23 vine_worker[126870] vine: (MOD) task 3 (pid 126900) exited normally with exit code 0
+2024/12/02 11:06:31.23 vine_worker[126870] vine: output: measuring /tmp/worker-238401-126870/task.3/result
+2024/12/02 11:06:31.23 vine_worker[126870] vine: output: moving /tmp/worker-238401-126870/task.3/result to /tmp/worker-238401-126870/cache/file-rnd-mzmrfgwtjkfibpx
+2024/12/02 11:06:31.23 vine_worker[126870] vine: tx: cache-update file-rnd-mzmrfgwtjkfibpx 1 0 8 33188 1100199 1733155590135934 X
+2024/12/02 11:06:31.23 vine_worker[126870] vine: output: measuring /tmp/worker-238401-126870/task.3/file2-0-1
+2024/12/02 11:06:31.23 vine_worker[126870] vine: output: moving /tmp/worker-238401-126870/task.3/file2-0-1 to /tmp/worker-238401-126870/cache/temp-rnd-wsrmzqwqcdacezt
+2024/12/02 11:06:31.23 vine_worker[126870] vine: tx: cache-update temp-rnd-wsrmzqwqcdacezt 1 0 1000000 33188 1100199 1733155590135934 X
+2024/12/02 11:06:31.23 vine_worker[126870] vine: tx: complete 0 0 94 94 1733155590135934 1733155591236133 0 3
+1+0 records in
+1+0 records out
+1000000 bytes (1.0 MB, 977 KiB) copied, 0.00148583 s, 673 MB/s
+2024/12/02 11:06:31.23 vine_worker[126870] vine: rx: get file-rnd-mzmrfgwtjkfibpx
+2024/12/02 11:06:31.23 vine_worker[126870] vine: tx: file file-rnd-mzmrfgwtjkfibpx 8 0644 1733155591
+2024/12/02 11:06:31.23 vine_worker[126870] vine: rx: unlink file-meta-a9298431b1b481d195f9061426189859
+2024/12/02 11:06:31.23 vine_worker[126870] debug: trashing file /tmp/worker-238401-126870/cache/file-meta-a9298431b1b481d195f9061426189859
+2024/12/02 11:06:31.23 vine_worker[126870] debug: trashing file /tmp/worker-238401-126870/cache/file-meta-a9298431b1b481d195f9061426189859.meta
+2024/12/02 11:06:31.23 vine_worker[126870] vine: rx: unlink file-meta-167e37f979e463c921f3a1717bf53226
+2024/12/02 11:06:31.23 vine_worker[126870] debug: trashing file /tmp/worker-238401-126870/cache/file-meta-167e37f979e463c921f3a1717bf53226
+2024/12/02 11:06:31.23 vine_worker[126870] debug: trashing file /tmp/worker-238401-126870/cache/file-meta-167e37f979e463c921f3a1717bf53226.meta
+2024/12/02 11:06:31.23 vine_worker[126870] vine: rx: unlink file-meta-5e1255bb676e7770fb3f7b0a09da198e
+2024/12/02 11:06:31.23 vine_worker[126870] debug: trashing file /tmp/worker-238401-126870/cache/file-meta-5e1255bb676e7770fb3f7b0a09da198e
+2024/12/02 11:06:31.23 vine_worker[126870] debug: trashing file /tmp/worker-238401-126870/cache/file-meta-5e1255bb676e7770fb3f7b0a09da198e.meta
+2024/12/02 11:06:31.23 vine_worker[126870] vine: rx: unlink file-rnd-mzmrfgwtjkfibpx
+2024/12/02 11:06:31.23 vine_worker[126870] debug: trashing file /tmp/worker-238401-126870/cache/file-rnd-mzmrfgwtjkfibpx
+2024/12/02 11:06:31.23 vine_worker[126870] debug: trashing file /tmp/worker-238401-126870/cache/file-rnd-mzmrfgwtjkfibpx.meta
+2024/12/02 11:06:31.23 vine_worker[126870] vine: rx: kill 3
+2024/12/02 11:06:31.23 vine_worker[126870] debug: trashing file /tmp/worker-238401-126870/task.3
+2024/12/02 11:06:31.23 vine_worker[126870] vine: rx: put file-meta-b4b762bc8ba153e2f2e60fd07892d8ec 0 2539
+2024/12/02 11:06:31.23 vine_worker[126870] vine: rx: file file-meta-b4b762bc8ba153e2f2e60fd07892d8ec 2539 0644 1733155579
+2024/12/02 11:06:31.23 vine_worker[126870] vine: rx: put file-meta-3e2b0ba4cd632b13eb3e32a8370f666b 0 401
+2024/12/02 11:06:31.23 vine_worker[126870] vine: rx: file file-meta-3e2b0ba4cd632b13eb3e32a8370f666b 401 0644 1733155579
+2024/12/02 11:06:31.23 vine_worker[126870] vine: rx: put file-meta-779a315cd935000a77e7b1c6972966ad 0 77
+2024/12/02 11:06:31.23 vine_worker[126870] vine: rx: file file-meta-779a315cd935000a77e7b1c6972966ad 77 0644 1733155579
+2024/12/02 11:06:31.23 vine_worker[126870] vine: rx: task 4
+2024/12/02 11:06:31.23 vine_worker[126870] vine: rx: cmd 59
+2024/12/02 11:06:31.23 vine_worker[126870] vine: rx: python3 exec_parsl_function.py map function argument result
+2024/12/02 11:06:31.23 vine_worker[126870] vine: rx: category f2
+2024/12/02 11:06:31.23 vine_worker[126870] vine: rx: cores 12.000
+2024/12/02 11:06:31.23 vine_worker[126870] vine: rx: gpus 0
+2024/12/02 11:06:31.23 vine_worker[126870] vine: rx: memory 1024
+2024/12/02 11:06:31.23 vine_worker[126870] vine: rx: disk 10000
+2024/12/02 11:06:31.23 vine_worker[126870] vine: rx: infile file-meta-5afac46a2a071d24e20268ab16cafa27 exec_parsl_function.py 0
+2024/12/02 11:06:31.23 vine_worker[126870] vine: rx: infile file-meta-b4b762bc8ba153e2f2e60fd07892d8ec function 0
+2024/12/02 11:06:31.23 vine_worker[126870] vine: rx: infile file-meta-3e2b0ba4cd632b13eb3e32a8370f666b argument 0
+2024/12/02 11:06:31.23 vine_worker[126870] vine: rx: infile file-meta-779a315cd935000a77e7b1c6972966ad map 0
+2024/12/02 11:06:31.23 vine_worker[126870] vine: rx: infile temp-rnd-wsrmzqwqcdacezt file2-0-1 0
+2024/12/02 11:06:31.23 vine_worker[126870] vine: rx: outfile file-rnd-ucsfbldwmuynulb result 0
+2024/12/02 11:06:31.23 vine_worker[126870] vine: rx: outfile temp-rnd-cqfzagfddvtdaok file3-0-2 0
+2024/12/02 11:06:31.23 vine_worker[126870] vine: rx: end
+2024/12/02 11:06:31.23 vine_worker[126870] vine: input: link /tmp/worker-238401-126870/cache/file-meta-5afac46a2a071d24e20268ab16cafa27 -> /tmp/worker-238401-126870/task.4/exec_parsl_function.py
+2024/12/02 11:06:31.23 vine_worker[126870] vine: input: link /tmp/worker-238401-126870/cache/file-meta-b4b762bc8ba153e2f2e60fd07892d8ec -> /tmp/worker-238401-126870/task.4/function
+2024/12/02 11:06:31.23 vine_worker[126870] vine: input: link /tmp/worker-238401-126870/cache/file-meta-3e2b0ba4cd632b13eb3e32a8370f666b -> /tmp/worker-238401-126870/task.4/argument
+2024/12/02 11:06:31.23 vine_worker[126870] vine: input: link /tmp/worker-238401-126870/cache/file-meta-779a315cd935000a77e7b1c6972966ad -> /tmp/worker-238401-126870/task.4/map
+2024/12/02 11:06:31.23 vine_worker[126870] vine: input: link /tmp/worker-238401-126870/cache/temp-rnd-wsrmzqwqcdacezt -> /tmp/worker-238401-126870/task.4/file2-0-1
+2024/12/02 11:06:31.23 vine_worker[126870] vine: started task 4 pid 126907: python3 exec_parsl_function.py map function argument result
+2024/12/02 11:06:31.23 vine_worker[126870] vine: tx: info tasks_running 1
+2024/12/02 11:06:32.32 vine_worker[126870] vine: (MOD) task 4 (pid 126907) exited normally with exit code 0
+2024/12/02 11:06:32.32 vine_worker[126870] vine: output: measuring /tmp/worker-238401-126870/task.4/result
+2024/12/02 11:06:32.32 vine_worker[126870] vine: output: moving /tmp/worker-238401-126870/task.4/result to /tmp/worker-238401-126870/cache/file-rnd-ucsfbldwmuynulb
+2024/12/02 11:06:32.32 vine_worker[126870] vine: tx: cache-update file-rnd-ucsfbldwmuynulb 1 0 8 33188 1087538 1733155591239092 X
+2024/12/02 11:06:32.32 vine_worker[126870] vine: output: measuring /tmp/worker-238401-126870/task.4/file3-0-2
+2024/12/02 11:06:32.32 vine_worker[126870] vine: output: moving /tmp/worker-238401-126870/task.4/file3-0-2 to /tmp/worker-238401-126870/cache/temp-rnd-cqfzagfddvtdaok
+2024/12/02 11:06:32.32 vine_worker[126870] vine: tx: cache-update temp-rnd-cqfzagfddvtdaok 1 0 1000000 33188 1087538 1733155591239092 X
+2024/12/02 11:06:32.32 vine_worker[126870] vine: tx: complete 0 0 93 93 1733155591239092 1733155592326630 0 4
+1+0 records in
+1+0 records out
+1000000 bytes (1.0 MB, 977 KiB) copied, 0.0013502 s, 741 MB/s
+2024/12/02 11:06:32.32 vine_worker[126870] vine: rx: get file-rnd-ucsfbldwmuynulb
+2024/12/02 11:06:32.32 vine_worker[126870] vine: tx: file file-rnd-ucsfbldwmuynulb 8 0644 1733155592
+2024/12/02 11:06:32.32 vine_worker[126870] vine: rx: unlink file-meta-b4b762bc8ba153e2f2e60fd07892d8ec
+2024/12/02 11:06:32.32 vine_worker[126870] debug: trashing file /tmp/worker-238401-126870/cache/file-meta-b4b762bc8ba153e2f2e60fd07892d8ec
+2024/12/02 11:06:32.32 vine_worker[126870] debug: trashing file /tmp/worker-238401-126870/cache/file-meta-b4b762bc8ba153e2f2e60fd07892d8ec.meta
+2024/12/02 11:06:32.32 vine_worker[126870] vine: rx: unlink file-meta-3e2b0ba4cd632b13eb3e32a8370f666b
+2024/12/02 11:06:32.32 vine_worker[126870] debug: trashing file /tmp/worker-238401-126870/cache/file-meta-3e2b0ba4cd632b13eb3e32a8370f666b
+2024/12/02 11:06:32.32 vine_worker[126870] debug: trashing file /tmp/worker-238401-126870/cache/file-meta-3e2b0ba4cd632b13eb3e32a8370f666b.meta
+2024/12/02 11:06:32.32 vine_worker[126870] vine: rx: unlink file-meta-779a315cd935000a77e7b1c6972966ad
+2024/12/02 11:06:32.32 vine_worker[126870] debug: trashing file /tmp/worker-238401-126870/cache/file-meta-779a315cd935000a77e7b1c6972966ad
+2024/12/02 11:06:32.32 vine_worker[126870] debug: trashing file /tmp/worker-238401-126870/cache/file-meta-779a315cd935000a77e7b1c6972966ad.meta
+2024/12/02 11:06:32.32 vine_worker[126870] vine: rx: unlink file-rnd-ucsfbldwmuynulb
+2024/12/02 11:06:32.32 vine_worker[126870] debug: trashing file /tmp/worker-238401-126870/cache/file-rnd-ucsfbldwmuynulb
+2024/12/02 11:06:32.32 vine_worker[126870] debug: trashing file /tmp/worker-238401-126870/cache/file-rnd-ucsfbldwmuynulb.meta
+2024/12/02 11:06:32.32 vine_worker[126870] vine: rx: kill 4
+2024/12/02 11:06:32.32 vine_worker[126870] debug: trashing file /tmp/worker-238401-126870/task.4
+2024/12/02 11:06:32.32 vine_worker[126870] vine: rx: put file-meta-caf03bdb4fc2025d71a63e4323a5a376 0 2539
+2024/12/02 11:06:32.32 vine_worker[126870] vine: rx: file file-meta-caf03bdb4fc2025d71a63e4323a5a376 2539 0644 1733155579
+2024/12/02 11:06:32.32 vine_worker[126870] vine: rx: put file-meta-ec21ee29f34bf7fa66116024a95bdd1a 0 401
+2024/12/02 11:06:32.32 vine_worker[126870] vine: rx: file file-meta-ec21ee29f34bf7fa66116024a95bdd1a 401 0644 1733155579
+2024/12/02 11:06:32.32 vine_worker[126870] vine: rx: put file-meta-52927d6869824ad7c4e65021577a6ef1 0 77
+2024/12/02 11:06:32.32 vine_worker[126870] vine: rx: file file-meta-52927d6869824ad7c4e65021577a6ef1 77 0644 1733155579
+2024/12/02 11:06:32.32 vine_worker[126870] vine: rx: task 5
+2024/12/02 11:06:32.32 vine_worker[126870] vine: rx: cmd 59
+2024/12/02 11:06:32.32 vine_worker[126870] vine: rx: python3 exec_parsl_function.py map function argument result
+2024/12/02 11:06:32.32 vine_worker[126870] vine: rx: category f2
+2024/12/02 11:06:32.32 vine_worker[126870] vine: rx: cores 12.000
+2024/12/02 11:06:32.32 vine_worker[126870] vine: rx: gpus 0
+2024/12/02 11:06:32.32 vine_worker[126870] vine: rx: memory 1024
+2024/12/02 11:06:32.32 vine_worker[126870] vine: rx: disk 10000
+2024/12/02 11:06:32.32 vine_worker[126870] vine: rx: infile file-meta-5afac46a2a071d24e20268ab16cafa27 exec_parsl_function.py 0
+2024/12/02 11:06:32.32 vine_worker[126870] vine: rx: infile file-meta-caf03bdb4fc2025d71a63e4323a5a376 function 0
+2024/12/02 11:06:32.32 vine_worker[126870] vine: rx: infile file-meta-ec21ee29f34bf7fa66116024a95bdd1a argument 0
+2024/12/02 11:06:32.32 vine_worker[126870] vine: rx: infile file-meta-52927d6869824ad7c4e65021577a6ef1 map 0
+2024/12/02 11:06:32.32 vine_worker[126870] vine: rx: infile temp-rnd-cqfzagfddvtdaok file3-0-2 0
+2024/12/02 11:06:32.32 vine_worker[126870] vine: rx: outfile file-rnd-mwnnaynqgdemtje result 0
+2024/12/02 11:06:32.32 vine_worker[126870] vine: rx: outfile temp-rnd-swdanmqxbyiuttb file4-0-3 0
+2024/12/02 11:06:32.32 vine_worker[126870] vine: rx: end
+2024/12/02 11:06:32.32 vine_worker[126870] vine: input: link /tmp/worker-238401-126870/cache/file-meta-5afac46a2a071d24e20268ab16cafa27 -> /tmp/worker-238401-126870/task.5/exec_parsl_function.py
+2024/12/02 11:06:32.32 vine_worker[126870] vine: input: link /tmp/worker-238401-126870/cache/file-meta-caf03bdb4fc2025d71a63e4323a5a376 -> /tmp/worker-238401-126870/task.5/function
+2024/12/02 11:06:32.32 vine_worker[126870] vine: input: link /tmp/worker-238401-126870/cache/file-meta-ec21ee29f34bf7fa66116024a95bdd1a -> /tmp/worker-238401-126870/task.5/argument
+2024/12/02 11:06:32.32 vine_worker[126870] vine: input: link /tmp/worker-238401-126870/cache/file-meta-52927d6869824ad7c4e65021577a6ef1 -> /tmp/worker-238401-126870/task.5/map
+2024/12/02 11:06:32.32 vine_worker[126870] vine: input: link /tmp/worker-238401-126870/cache/temp-rnd-cqfzagfddvtdaok -> /tmp/worker-238401-126870/task.5/file3-0-2
+2024/12/02 11:06:32.32 vine_worker[126870] vine: started task 5 pid 126914: python3 exec_parsl_function.py map function argument result
+2024/12/02 11:06:32.32 vine_worker[126870] vine: tx: info tasks_running 1
+2024/12/02 11:06:33.42 vine_worker[126870] vine: (MOD) task 5 (pid 126914) exited normally with exit code 0
+2024/12/02 11:06:33.42 vine_worker[126870] vine: output: measuring /tmp/worker-238401-126870/task.5/result
+2024/12/02 11:06:33.42 vine_worker[126870] vine: output: moving /tmp/worker-238401-126870/task.5/result to /tmp/worker-238401-126870/cache/file-rnd-mwnnaynqgdemtje
+2024/12/02 11:06:33.42 vine_worker[126870] vine: tx: cache-update file-rnd-mwnnaynqgdemtje 1 0 8 33188 1091268 1733155592329200 X
+2024/12/02 11:06:33.42 vine_worker[126870] vine: output: measuring /tmp/worker-238401-126870/task.5/file4-0-3
+2024/12/02 11:06:33.42 vine_worker[126870] vine: output: moving /tmp/worker-238401-126870/task.5/file4-0-3 to /tmp/worker-238401-126870/cache/temp-rnd-swdanmqxbyiuttb
+2024/12/02 11:06:33.42 vine_worker[126870] vine: tx: cache-update temp-rnd-swdanmqxbyiuttb 1 0 1000000 33188 1091268 1733155592329200 X
+2024/12/02 11:06:33.42 vine_worker[126870] vine: tx: complete 0 0 95 95 1733155592329200 1733155593420468 0 5
+1+0 records in
+1+0 records out
+1000000 bytes (1.0 MB, 977 KiB) copied, 0.000884168 s, 1.1 GB/s
+2024/12/02 11:06:33.42 vine_worker[126870] vine: rx: get file-rnd-mwnnaynqgdemtje
+2024/12/02 11:06:33.42 vine_worker[126870] vine: tx: file file-rnd-mwnnaynqgdemtje 8 0644 1733155593
+2024/12/02 11:06:33.42 vine_worker[126870] vine: rx: unlink file-meta-caf03bdb4fc2025d71a63e4323a5a376
+2024/12/02 11:06:33.42 vine_worker[126870] debug: trashing file /tmp/worker-238401-126870/cache/file-meta-caf03bdb4fc2025d71a63e4323a5a376
+2024/12/02 11:06:33.42 vine_worker[126870] debug: trashing file /tmp/worker-238401-126870/cache/file-meta-caf03bdb4fc2025d71a63e4323a5a376.meta
+2024/12/02 11:06:33.42 vine_worker[126870] vine: rx: unlink file-meta-ec21ee29f34bf7fa66116024a95bdd1a
+2024/12/02 11:06:33.42 vine_worker[126870] debug: trashing file /tmp/worker-238401-126870/cache/file-meta-ec21ee29f34bf7fa66116024a95bdd1a
+2024/12/02 11:06:33.42 vine_worker[126870] debug: trashing file /tmp/worker-238401-126870/cache/file-meta-ec21ee29f34bf7fa66116024a95bdd1a.meta
+2024/12/02 11:06:33.42 vine_worker[126870] vine: rx: unlink file-meta-52927d6869824ad7c4e65021577a6ef1
+2024/12/02 11:06:33.42 vine_worker[126870] debug: trashing file /tmp/worker-238401-126870/cache/file-meta-52927d6869824ad7c4e65021577a6ef1
+2024/12/02 11:06:33.42 vine_worker[126870] debug: trashing file /tmp/worker-238401-126870/cache/file-meta-52927d6869824ad7c4e65021577a6ef1.meta
+2024/12/02 11:06:33.42 vine_worker[126870] vine: rx: unlink file-rnd-mwnnaynqgdemtje
+2024/12/02 11:06:33.42 vine_worker[126870] debug: trashing file /tmp/worker-238401-126870/cache/file-rnd-mwnnaynqgdemtje
+2024/12/02 11:06:33.42 vine_worker[126870] debug: trashing file /tmp/worker-238401-126870/cache/file-rnd-mwnnaynqgdemtje.meta
+2024/12/02 11:06:33.42 vine_worker[126870] vine: rx: kill 5
+2024/12/02 11:06:33.42 vine_worker[126870] debug: trashing file /tmp/worker-238401-126870/task.5
+2024/12/02 11:06:33.42 vine_worker[126870] vine: rx: put file-meta-68e0a570ce9dc35b4291b1773bbb64f7 0 2539
+2024/12/02 11:06:33.42 vine_worker[126870] vine: rx: file file-meta-68e0a570ce9dc35b4291b1773bbb64f7 2539 0644 1733155579
+2024/12/02 11:06:33.42 vine_worker[126870] vine: rx: put file-meta-a5ed50c500cfc23c699d1858f1f4144b 0 401
+2024/12/02 11:06:33.42 vine_worker[126870] vine: rx: file file-meta-a5ed50c500cfc23c699d1858f1f4144b 401 0644 1733155579
+2024/12/02 11:06:33.42 vine_worker[126870] vine: rx: put file-meta-e483bd8046ad14611673416fe2b86b65 0 77
+2024/12/02 11:06:33.42 vine_worker[126870] vine: rx: file file-meta-e483bd8046ad14611673416fe2b86b65 77 0644 1733155579
+2024/12/02 11:06:33.42 vine_worker[126870] vine: rx: task 6
+2024/12/02 11:06:33.42 vine_worker[126870] vine: rx: cmd 59
+2024/12/02 11:06:33.42 vine_worker[126870] vine: rx: python3 exec_parsl_function.py map function argument result
+2024/12/02 11:06:33.42 vine_worker[126870] vine: rx: category f2
+2024/12/02 11:06:33.42 vine_worker[126870] vine: rx: cores 12.000
+2024/12/02 11:06:33.42 vine_worker[126870] vine: rx: gpus 0
+2024/12/02 11:06:33.42 vine_worker[126870] vine: rx: memory 1024
+2024/12/02 11:06:33.42 vine_worker[126870] vine: rx: disk 10000
+2024/12/02 11:06:33.42 vine_worker[126870] vine: rx: infile file-meta-5afac46a2a071d24e20268ab16cafa27 exec_parsl_function.py 0
+2024/12/02 11:06:33.42 vine_worker[126870] vine: rx: infile file-meta-68e0a570ce9dc35b4291b1773bbb64f7 function 0
+2024/12/02 11:06:33.42 vine_worker[126870] vine: rx: infile file-meta-a5ed50c500cfc23c699d1858f1f4144b argument 0
+2024/12/02 11:06:33.42 vine_worker[126870] vine: rx: infile file-meta-e483bd8046ad14611673416fe2b86b65 map 0
+2024/12/02 11:06:33.42 vine_worker[126870] vine: rx: infile temp-rnd-swdanmqxbyiuttb file4-0-3 0
+2024/12/02 11:06:33.42 vine_worker[126870] vine: rx: outfile file-rnd-nsduuixegwqwbtk result 0
+2024/12/02 11:06:33.42 vine_worker[126870] vine: rx: outfile temp-rnd-thhztrwvzdtybgt file5-0-4 0
+2024/12/02 11:06:33.42 vine_worker[126870] vine: rx: end
+2024/12/02 11:06:33.42 vine_worker[126870] vine: input: link /tmp/worker-238401-126870/cache/file-meta-5afac46a2a071d24e20268ab16cafa27 -> /tmp/worker-238401-126870/task.6/exec_parsl_function.py
+2024/12/02 11:06:33.42 vine_worker[126870] vine: input: link /tmp/worker-238401-126870/cache/file-meta-68e0a570ce9dc35b4291b1773bbb64f7 -> /tmp/worker-238401-126870/task.6/function
+2024/12/02 11:06:33.42 vine_worker[126870] vine: input: link /tmp/worker-238401-126870/cache/file-meta-a5ed50c500cfc23c699d1858f1f4144b -> /tmp/worker-238401-126870/task.6/argument
+2024/12/02 11:06:33.42 vine_worker[126870] vine: input: link /tmp/worker-238401-126870/cache/file-meta-e483bd8046ad14611673416fe2b86b65 -> /tmp/worker-238401-126870/task.6/map
+2024/12/02 11:06:33.42 vine_worker[126870] vine: input: link /tmp/worker-238401-126870/cache/temp-rnd-swdanmqxbyiuttb -> /tmp/worker-238401-126870/task.6/file4-0-3
+2024/12/02 11:06:33.42 vine_worker[126870] vine: started task 6 pid 126921: python3 exec_parsl_function.py map function argument result
+2024/12/02 11:06:33.42 vine_worker[126870] vine: tx: info tasks_running 1
+2024/12/02 11:06:34.52 vine_worker[126870] vine: (MOD) task 6 (pid 126921) exited normally with exit code 0
+2024/12/02 11:06:34.52 vine_worker[126870] vine: output: measuring /tmp/worker-238401-126870/task.6/result
+2024/12/02 11:06:34.52 vine_worker[126870] vine: output: moving /tmp/worker-238401-126870/task.6/result to /tmp/worker-238401-126870/cache/file-rnd-nsduuixegwqwbtk
+2024/12/02 11:06:34.52 vine_worker[126870] vine: tx: cache-update file-rnd-nsduuixegwqwbtk 1 0 8 33188 1097423 1733155593422745 X
+2024/12/02 11:06:34.52 vine_worker[126870] vine: output: measuring /tmp/worker-238401-126870/task.6/file5-0-4
+2024/12/02 11:06:34.52 vine_worker[126870] vine: output: moving /tmp/worker-238401-126870/task.6/file5-0-4 to /tmp/worker-238401-126870/cache/temp-rnd-thhztrwvzdtybgt
+2024/12/02 11:06:34.52 vine_worker[126870] vine: tx: cache-update temp-rnd-thhztrwvzdtybgt 1 0 1000000 33188 1097423 1733155593422745 X
+2024/12/02 11:06:34.52 vine_worker[126870] vine: tx: complete 0 0 94 94 1733155593422745 1733155594520168 0 6
+1+0 records in
+1+0 records out
+1000000 bytes (1.0 MB, 977 KiB) copied, 0.00090757 s, 1.1 GB/s
+2024/12/02 11:06:34.52 vine_worker[126870] vine: rx: get file-rnd-nsduuixegwqwbtk
+2024/12/02 11:06:34.52 vine_worker[126870] vine: tx: file file-rnd-nsduuixegwqwbtk 8 0644 1733155594
+2024/12/02 11:06:34.52 vine_worker[126870] vine: rx: unlink file-meta-68e0a570ce9dc35b4291b1773bbb64f7
+2024/12/02 11:06:34.52 vine_worker[126870] debug: trashing file /tmp/worker-238401-126870/cache/file-meta-68e0a570ce9dc35b4291b1773bbb64f7
+2024/12/02 11:06:34.52 vine_worker[126870] debug: trashing file /tmp/worker-238401-126870/cache/file-meta-68e0a570ce9dc35b4291b1773bbb64f7.meta
+2024/12/02 11:06:34.52 vine_worker[126870] vine: rx: unlink file-meta-a5ed50c500cfc23c699d1858f1f4144b
+2024/12/02 11:06:34.52 vine_worker[126870] debug: trashing file /tmp/worker-238401-126870/cache/file-meta-a5ed50c500cfc23c699d1858f1f4144b
+2024/12/02 11:06:34.52 vine_worker[126870] debug: trashing file /tmp/worker-238401-126870/cache/file-meta-a5ed50c500cfc23c699d1858f1f4144b.meta
+2024/12/02 11:06:34.52 vine_worker[126870] vine: rx: unlink file-meta-e483bd8046ad14611673416fe2b86b65
+2024/12/02 11:06:34.52 vine_worker[126870] debug: trashing file /tmp/worker-238401-126870/cache/file-meta-e483bd8046ad14611673416fe2b86b65
+2024/12/02 11:06:34.52 vine_worker[126870] debug: trashing file /tmp/worker-238401-126870/cache/file-meta-e483bd8046ad14611673416fe2b86b65.meta
+2024/12/02 11:06:34.52 vine_worker[126870] vine: rx: unlink file-rnd-nsduuixegwqwbtk
+2024/12/02 11:06:34.52 vine_worker[126870] debug: trashing file /tmp/worker-238401-126870/cache/file-rnd-nsduuixegwqwbtk
+2024/12/02 11:06:34.52 vine_worker[126870] debug: trashing file /tmp/worker-238401-126870/cache/file-rnd-nsduuixegwqwbtk.meta
+2024/12/02 11:06:34.52 vine_worker[126870] vine: rx: kill 6
+2024/12/02 11:06:34.52 vine_worker[126870] debug: trashing file /tmp/worker-238401-126870/task.6
+2024/12/02 11:06:34.52 vine_worker[126870] vine: rx: put file-meta-a3f91a6e283b0a43556ff380dea046c2 0 2539
+2024/12/02 11:06:34.52 vine_worker[126870] vine: rx: file file-meta-a3f91a6e283b0a43556ff380dea046c2 2539 0644 1733155579
+2024/12/02 11:06:34.52 vine_worker[126870] vine: rx: put file-meta-f4114ab51881861a84924cbb22dde46c 0 401
+2024/12/02 11:06:34.52 vine_worker[126870] vine: rx: file file-meta-f4114ab51881861a84924cbb22dde46c 401 0644 1733155579
+2024/12/02 11:06:34.52 vine_worker[126870] vine: rx: put file-meta-27fd1e041051c956691b1f3e25e38472 0 77
+2024/12/02 11:06:34.52 vine_worker[126870] vine: rx: file file-meta-27fd1e041051c956691b1f3e25e38472 77 0644 1733155579
+2024/12/02 11:06:34.52 vine_worker[126870] vine: rx: task 7
+2024/12/02 11:06:34.52 vine_worker[126870] vine: rx: cmd 59
+2024/12/02 11:06:34.52 vine_worker[126870] vine: rx: python3 exec_parsl_function.py map function argument result
+2024/12/02 11:06:34.52 vine_worker[126870] vine: rx: category f2
+2024/12/02 11:06:34.52 vine_worker[126870] vine: rx: cores 12.000
+2024/12/02 11:06:34.52 vine_worker[126870] vine: rx: gpus 0
+2024/12/02 11:06:34.52 vine_worker[126870] vine: rx: memory 1024
+2024/12/02 11:06:34.52 vine_worker[126870] vine: rx: disk 10000
+2024/12/02 11:06:34.52 vine_worker[126870] vine: rx: infile file-meta-5afac46a2a071d24e20268ab16cafa27 exec_parsl_function.py 0
+2024/12/02 11:06:34.52 vine_worker[126870] vine: rx: infile file-meta-a3f91a6e283b0a43556ff380dea046c2 function 0
+2024/12/02 11:06:34.52 vine_worker[126870] vine: rx: infile file-meta-f4114ab51881861a84924cbb22dde46c argument 0
+2024/12/02 11:06:34.52 vine_worker[126870] vine: rx: infile file-meta-27fd1e041051c956691b1f3e25e38472 map 0
+2024/12/02 11:06:34.52 vine_worker[126870] vine: rx: infile temp-rnd-thhztrwvzdtybgt file5-0-4 0
+2024/12/02 11:06:34.52 vine_worker[126870] vine: rx: outfile file-rnd-ysewemmkqcdnjuo result 0
+2024/12/02 11:06:34.52 vine_worker[126870] vine: rx: outfile temp-rnd-jccavozwzebzcxl file6-0-5 0
+2024/12/02 11:06:34.52 vine_worker[126870] vine: rx: end
+2024/12/02 11:06:34.52 vine_worker[126870] vine: input: link /tmp/worker-238401-126870/cache/file-meta-5afac46a2a071d24e20268ab16cafa27 -> /tmp/worker-238401-126870/task.7/exec_parsl_function.py
+2024/12/02 11:06:34.52 vine_worker[126870] vine: input: link /tmp/worker-238401-126870/cache/file-meta-a3f91a6e283b0a43556ff380dea046c2 -> /tmp/worker-238401-126870/task.7/function
+2024/12/02 11:06:34.52 vine_worker[126870] vine: input: link /tmp/worker-238401-126870/cache/file-meta-f4114ab51881861a84924cbb22dde46c -> /tmp/worker-238401-126870/task.7/argument
+2024/12/02 11:06:34.52 vine_worker[126870] vine: input: link /tmp/worker-238401-126870/cache/file-meta-27fd1e041051c956691b1f3e25e38472 -> /tmp/worker-238401-126870/task.7/map
+2024/12/02 11:06:34.52 vine_worker[126870] vine: input: link /tmp/worker-238401-126870/cache/temp-rnd-thhztrwvzdtybgt -> /tmp/worker-238401-126870/task.7/file5-0-4
+2024/12/02 11:06:34.52 vine_worker[126870] vine: started task 7 pid 126928: python3 exec_parsl_function.py map function argument result
+2024/12/02 11:06:34.52 vine_worker[126870] vine: tx: info tasks_running 1
+2024/12/02 11:06:35.64 vine_worker[126870] vine: (MOD) task 7 (pid 126928) exited normally with exit code 0
+2024/12/02 11:06:35.64 vine_worker[126870] vine: output: measuring /tmp/worker-238401-126870/task.7/result
+2024/12/02 11:06:35.64 vine_worker[126870] vine: output: moving /tmp/worker-238401-126870/task.7/result to /tmp/worker-238401-126870/cache/file-rnd-ysewemmkqcdnjuo
+2024/12/02 11:06:35.64 vine_worker[126870] vine: tx: cache-update file-rnd-ysewemmkqcdnjuo 1 0 8 33188 1120672 1733155594522752 X
+2024/12/02 11:06:35.64 vine_worker[126870] vine: output: measuring /tmp/worker-238401-126870/task.7/file6-0-5
+2024/12/02 11:06:35.64 vine_worker[126870] vine: output: moving /tmp/worker-238401-126870/task.7/file6-0-5 to /tmp/worker-238401-126870/cache/temp-rnd-jccavozwzebzcxl
+2024/12/02 11:06:35.64 vine_worker[126870] vine: tx: cache-update temp-rnd-jccavozwzebzcxl 1 0 1000000 33188 1120672 1733155594522752 X
+2024/12/02 11:06:35.64 vine_worker[126870] vine: tx: complete 0 0 93 93 1733155594522752 1733155595643424 0 7
+1+0 records in
+1+0 records out
+1000000 bytes (1.0 MB, 977 KiB) copied, 0.0016311 s, 613 MB/s
+2024/12/02 11:06:35.64 vine_worker[126870] vine: rx: get file-rnd-ysewemmkqcdnjuo
+2024/12/02 11:06:35.64 vine_worker[126870] vine: tx: file file-rnd-ysewemmkqcdnjuo 8 0644 1733155595
+2024/12/02 11:06:35.64 vine_worker[126870] vine: rx: unlink file-meta-a3f91a6e283b0a43556ff380dea046c2
+2024/12/02 11:06:35.64 vine_worker[126870] debug: trashing file /tmp/worker-238401-126870/cache/file-meta-a3f91a6e283b0a43556ff380dea046c2
+2024/12/02 11:06:35.64 vine_worker[126870] debug: trashing file /tmp/worker-238401-126870/cache/file-meta-a3f91a6e283b0a43556ff380dea046c2.meta
+2024/12/02 11:06:35.64 vine_worker[126870] vine: rx: unlink file-meta-f4114ab51881861a84924cbb22dde46c
+2024/12/02 11:06:35.64 vine_worker[126870] debug: trashing file /tmp/worker-238401-126870/cache/file-meta-f4114ab51881861a84924cbb22dde46c
+2024/12/02 11:06:35.64 vine_worker[126870] debug: trashing file /tmp/worker-238401-126870/cache/file-meta-f4114ab51881861a84924cbb22dde46c.meta
+2024/12/02 11:06:35.64 vine_worker[126870] vine: rx: unlink file-meta-27fd1e041051c956691b1f3e25e38472
+2024/12/02 11:06:35.64 vine_worker[126870] debug: trashing file /tmp/worker-238401-126870/cache/file-meta-27fd1e041051c956691b1f3e25e38472
+2024/12/02 11:06:35.64 vine_worker[126870] debug: trashing file /tmp/worker-238401-126870/cache/file-meta-27fd1e041051c956691b1f3e25e38472.meta
+2024/12/02 11:06:35.64 vine_worker[126870] vine: rx: unlink file-rnd-ysewemmkqcdnjuo
+2024/12/02 11:06:35.64 vine_worker[126870] debug: trashing file /tmp/worker-238401-126870/cache/file-rnd-ysewemmkqcdnjuo
+2024/12/02 11:06:35.64 vine_worker[126870] debug: trashing file /tmp/worker-238401-126870/cache/file-rnd-ysewemmkqcdnjuo.meta
+2024/12/02 11:06:35.64 vine_worker[126870] vine: rx: kill 7
+2024/12/02 11:06:35.64 vine_worker[126870] debug: trashing file /tmp/worker-238401-126870/task.7
+2024/12/02 11:06:35.64 vine_worker[126870] vine: rx: put file-meta-43b3b2dd6af4818c03d29d46a23ec040 0 2539
+2024/12/02 11:06:35.64 vine_worker[126870] vine: rx: file file-meta-43b3b2dd6af4818c03d29d46a23ec040 2539 0644 1733155579
+2024/12/02 11:06:35.64 vine_worker[126870] vine: rx: put file-meta-1b23cdb55479da7af4207c7371cb68a6 0 401
+2024/12/02 11:06:35.64 vine_worker[126870] vine: rx: file file-meta-1b23cdb55479da7af4207c7371cb68a6 401 0644 1733155579
+2024/12/02 11:06:35.64 vine_worker[126870] vine: rx: put file-meta-027ac7a56dab0f101bff2a34ed483b95 0 77
+2024/12/02 11:06:35.64 vine_worker[126870] vine: rx: file file-meta-027ac7a56dab0f101bff2a34ed483b95 77 0644 1733155579
+2024/12/02 11:06:35.64 vine_worker[126870] vine: rx: task 8
+2024/12/02 11:06:35.64 vine_worker[126870] vine: rx: cmd 59
+2024/12/02 11:06:35.64 vine_worker[126870] vine: rx: python3 exec_parsl_function.py map function argument result
+2024/12/02 11:06:35.64 vine_worker[126870] vine: rx: category f2
+2024/12/02 11:06:35.64 vine_worker[126870] vine: rx: cores 12.000
+2024/12/02 11:06:35.64 vine_worker[126870] vine: rx: gpus 0
+2024/12/02 11:06:35.64 vine_worker[126870] vine: rx: memory 1024
+2024/12/02 11:06:35.64 vine_worker[126870] vine: rx: disk 10000
+2024/12/02 11:06:35.64 vine_worker[126870] vine: rx: infile file-meta-5afac46a2a071d24e20268ab16cafa27 exec_parsl_function.py 0
+2024/12/02 11:06:35.64 vine_worker[126870] vine: rx: infile file-meta-43b3b2dd6af4818c03d29d46a23ec040 function 0
+2024/12/02 11:06:35.64 vine_worker[126870] vine: rx: infile file-meta-1b23cdb55479da7af4207c7371cb68a6 argument 0
+2024/12/02 11:06:35.64 vine_worker[126870] vine: rx: infile file-meta-027ac7a56dab0f101bff2a34ed483b95 map 0
+2024/12/02 11:06:35.64 vine_worker[126870] vine: rx: infile temp-rnd-jccavozwzebzcxl file6-0-5 0
+2024/12/02 11:06:35.64 vine_worker[126870] vine: rx: outfile file-rnd-snrurcfqcvjthrw result 0
+2024/12/02 11:06:35.64 vine_worker[126870] vine: rx: outfile temp-rnd-cuvlheuktvsmetj file7-0-6 0
+2024/12/02 11:06:35.64 vine_worker[126870] vine: rx: end
+2024/12/02 11:06:35.64 vine_worker[126870] vine: input: link /tmp/worker-238401-126870/cache/file-meta-5afac46a2a071d24e20268ab16cafa27 -> /tmp/worker-238401-126870/task.8/exec_parsl_function.py
+2024/12/02 11:06:35.64 vine_worker[126870] vine: input: link /tmp/worker-238401-126870/cache/file-meta-43b3b2dd6af4818c03d29d46a23ec040 -> /tmp/worker-238401-126870/task.8/function
+2024/12/02 11:06:35.64 vine_worker[126870] vine: input: link /tmp/worker-238401-126870/cache/file-meta-1b23cdb55479da7af4207c7371cb68a6 -> /tmp/worker-238401-126870/task.8/argument
+2024/12/02 11:06:35.64 vine_worker[126870] vine: input: link /tmp/worker-238401-126870/cache/file-meta-027ac7a56dab0f101bff2a34ed483b95 -> /tmp/worker-238401-126870/task.8/map
+2024/12/02 11:06:35.64 vine_worker[126870] vine: input: link /tmp/worker-238401-126870/cache/temp-rnd-jccavozwzebzcxl -> /tmp/worker-238401-126870/task.8/file6-0-5
+2024/12/02 11:06:35.64 vine_worker[126870] vine: started task 8 pid 126935: python3 exec_parsl_function.py map function argument result
+2024/12/02 11:06:35.64 vine_worker[126870] vine: tx: info tasks_running 1
+2024/12/02 11:06:36.73 vine_worker[126870] vine: (MOD) task 8 (pid 126935) exited normally with exit code 0
+2024/12/02 11:06:36.73 vine_worker[126870] vine: output: measuring /tmp/worker-238401-126870/task.8/result
+2024/12/02 11:06:36.73 vine_worker[126870] vine: output: moving /tmp/worker-238401-126870/task.8/result to /tmp/worker-238401-126870/cache/file-rnd-snrurcfqcvjthrw
+2024/12/02 11:06:36.73 vine_worker[126870] vine: tx: cache-update file-rnd-snrurcfqcvjthrw 1 0 8 33188 1093761 1733155595645689 X
+2024/12/02 11:06:36.73 vine_worker[126870] vine: output: measuring /tmp/worker-238401-126870/task.8/file7-0-6
+2024/12/02 11:06:36.73 vine_worker[126870] vine: output: moving /tmp/worker-238401-126870/task.8/file7-0-6 to /tmp/worker-238401-126870/cache/temp-rnd-cuvlheuktvsmetj
+2024/12/02 11:06:36.73 vine_worker[126870] vine: tx: cache-update temp-rnd-cuvlheuktvsmetj 1 0 1000000 33188 1093761 1733155595645689 X
+2024/12/02 11:06:36.73 vine_worker[126870] vine: tx: complete 0 0 94 94 1733155595645689 1733155596739450 0 8
+1+0 records in
+1+0 records out
+1000000 bytes (1.0 MB, 977 KiB) copied, 0.00119964 s, 834 MB/s
+2024/12/02 11:06:36.73 vine_worker[126870] vine: rx: get file-rnd-snrurcfqcvjthrw
+2024/12/02 11:06:36.73 vine_worker[126870] vine: tx: file file-rnd-snrurcfqcvjthrw 8 0644 1733155596
+2024/12/02 11:06:36.74 vine_worker[126870] vine: rx: unlink file-meta-43b3b2dd6af4818c03d29d46a23ec040
+2024/12/02 11:06:36.74 vine_worker[126870] debug: trashing file /tmp/worker-238401-126870/cache/file-meta-43b3b2dd6af4818c03d29d46a23ec040
+2024/12/02 11:06:36.74 vine_worker[126870] debug: trashing file /tmp/worker-238401-126870/cache/file-meta-43b3b2dd6af4818c03d29d46a23ec040.meta
+2024/12/02 11:06:36.74 vine_worker[126870] vine: rx: unlink file-meta-1b23cdb55479da7af4207c7371cb68a6
+2024/12/02 11:06:36.74 vine_worker[126870] debug: trashing file /tmp/worker-238401-126870/cache/file-meta-1b23cdb55479da7af4207c7371cb68a6
+2024/12/02 11:06:36.74 vine_worker[126870] debug: trashing file /tmp/worker-238401-126870/cache/file-meta-1b23cdb55479da7af4207c7371cb68a6.meta
+2024/12/02 11:06:36.74 vine_worker[126870] vine: rx: unlink file-meta-027ac7a56dab0f101bff2a34ed483b95
+2024/12/02 11:06:36.74 vine_worker[126870] debug: trashing file /tmp/worker-238401-126870/cache/file-meta-027ac7a56dab0f101bff2a34ed483b95
+2024/12/02 11:06:36.74 vine_worker[126870] debug: trashing file /tmp/worker-238401-126870/cache/file-meta-027ac7a56dab0f101bff2a34ed483b95.meta
+2024/12/02 11:06:36.74 vine_worker[126870] vine: rx: unlink file-rnd-snrurcfqcvjthrw
+2024/12/02 11:06:36.74 vine_worker[126870] debug: trashing file /tmp/worker-238401-126870/cache/file-rnd-snrurcfqcvjthrw
+2024/12/02 11:06:36.74 vine_worker[126870] debug: trashing file /tmp/worker-238401-126870/cache/file-rnd-snrurcfqcvjthrw.meta
+2024/12/02 11:06:36.74 vine_worker[126870] vine: rx: kill 8
+2024/12/02 11:06:36.74 vine_worker[126870] debug: trashing file /tmp/worker-238401-126870/task.8
+2024/12/02 11:06:36.74 vine_worker[126870] vine: rx: put file-meta-3470c1e4a998dd5c56f0db1a5ca8d6d8 0 2539
+2024/12/02 11:06:36.74 vine_worker[126870] vine: rx: file file-meta-3470c1e4a998dd5c56f0db1a5ca8d6d8 2539 0644 1733155579
+2024/12/02 11:06:36.74 vine_worker[126870] vine: rx: put file-meta-520a14cfc834efccb022ed9038af80c2 0 401
+2024/12/02 11:06:36.74 vine_worker[126870] vine: rx: file file-meta-520a14cfc834efccb022ed9038af80c2 401 0644 1733155579
+2024/12/02 11:06:36.74 vine_worker[126870] vine: rx: put file-meta-0855d1e257c95491e5a707a1b50ba18e 0 77
+2024/12/02 11:06:36.74 vine_worker[126870] vine: rx: file file-meta-0855d1e257c95491e5a707a1b50ba18e 77 0644 1733155579
+2024/12/02 11:06:36.74 vine_worker[126870] vine: rx: task 9
+2024/12/02 11:06:36.74 vine_worker[126870] vine: rx: cmd 59
+2024/12/02 11:06:36.74 vine_worker[126870] vine: rx: python3 exec_parsl_function.py map function argument result
+2024/12/02 11:06:36.74 vine_worker[126870] vine: rx: category f2
+2024/12/02 11:06:36.74 vine_worker[126870] vine: rx: cores 12.000
+2024/12/02 11:06:36.74 vine_worker[126870] vine: rx: gpus 0
+2024/12/02 11:06:36.74 vine_worker[126870] vine: rx: memory 1024
+2024/12/02 11:06:36.74 vine_worker[126870] vine: rx: disk 10000
+2024/12/02 11:06:36.74 vine_worker[126870] vine: rx: infile file-meta-5afac46a2a071d24e20268ab16cafa27 exec_parsl_function.py 0
+2024/12/02 11:06:36.74 vine_worker[126870] vine: rx: infile file-meta-3470c1e4a998dd5c56f0db1a5ca8d6d8 function 0
+2024/12/02 11:06:36.74 vine_worker[126870] vine: rx: infile file-meta-520a14cfc834efccb022ed9038af80c2 argument 0
+2024/12/02 11:06:36.74 vine_worker[126870] vine: rx: infile file-meta-0855d1e257c95491e5a707a1b50ba18e map 0
+2024/12/02 11:06:36.74 vine_worker[126870] vine: rx: infile temp-rnd-cuvlheuktvsmetj file7-0-6 0
+2024/12/02 11:06:36.74 vine_worker[126870] vine: rx: outfile file-rnd-letdnncxtvoldas result 0
+2024/12/02 11:06:36.74 vine_worker[126870] vine: rx: outfile temp-rnd-uthdpeynzrvlpqb file8-0-7 0
+2024/12/02 11:06:36.74 vine_worker[126870] vine: rx: end
+2024/12/02 11:06:36.74 vine_worker[126870] vine: input: link /tmp/worker-238401-126870/cache/file-meta-5afac46a2a071d24e20268ab16cafa27 -> /tmp/worker-238401-126870/task.9/exec_parsl_function.py
+2024/12/02 11:06:36.74 vine_worker[126870] vine: input: link /tmp/worker-238401-126870/cache/file-meta-3470c1e4a998dd5c56f0db1a5ca8d6d8 -> /tmp/worker-238401-126870/task.9/function
+2024/12/02 11:06:36.74 vine_worker[126870] vine: input: link /tmp/worker-238401-126870/cache/file-meta-520a14cfc834efccb022ed9038af80c2 -> /tmp/worker-238401-126870/task.9/argument
+2024/12/02 11:06:36.74 vine_worker[126870] vine: input: link /tmp/worker-238401-126870/cache/file-meta-0855d1e257c95491e5a707a1b50ba18e -> /tmp/worker-238401-126870/task.9/map
+2024/12/02 11:06:36.74 vine_worker[126870] vine: input: link /tmp/worker-238401-126870/cache/temp-rnd-cuvlheuktvsmetj -> /tmp/worker-238401-126870/task.9/file7-0-6
+2024/12/02 11:06:36.74 vine_worker[126870] vine: started task 9 pid 126942: python3 exec_parsl_function.py map function argument result
+2024/12/02 11:06:36.74 vine_worker[126870] vine: tx: info tasks_running 1
+2024/12/02 11:06:37.83 vine_worker[126870] vine: (MOD) task 9 (pid 126942) exited normally with exit code 0
+2024/12/02 11:06:37.83 vine_worker[126870] vine: output: measuring /tmp/worker-238401-126870/task.9/result
+2024/12/02 11:06:37.83 vine_worker[126870] vine: output: moving /tmp/worker-238401-126870/task.9/result to /tmp/worker-238401-126870/cache/file-rnd-letdnncxtvoldas
+2024/12/02 11:06:37.83 vine_worker[126870] vine: tx: cache-update file-rnd-letdnncxtvoldas 1 0 8 33188 1095917 1733155596741663 X
+2024/12/02 11:06:37.83 vine_worker[126870] vine: output: measuring /tmp/worker-238401-126870/task.9/file8-0-7
+2024/12/02 11:06:37.83 vine_worker[126870] vine: output: moving /tmp/worker-238401-126870/task.9/file8-0-7 to /tmp/worker-238401-126870/cache/temp-rnd-uthdpeynzrvlpqb
+2024/12/02 11:06:37.83 vine_worker[126870] vine: tx: cache-update temp-rnd-uthdpeynzrvlpqb 1 0 1000000 33188 1095917 1733155596741663 X
+2024/12/02 11:06:37.83 vine_worker[126870] vine: tx: complete 0 0 93 93 1733155596741663 1733155597837580 0 9
+1+0 records in
+1+0 records out
+1000000 bytes (1.0 MB, 977 KiB) copied, 0.0010183 s, 982 MB/s
+2024/12/02 11:06:37.83 vine_worker[126870] vine: rx: get file-rnd-letdnncxtvoldas
+2024/12/02 11:06:37.83 vine_worker[126870] vine: tx: file file-rnd-letdnncxtvoldas 8 0644 1733155597
+2024/12/02 11:06:37.83 vine_worker[126870] vine: rx: unlink file-meta-3470c1e4a998dd5c56f0db1a5ca8d6d8
+2024/12/02 11:06:37.83 vine_worker[126870] debug: trashing file /tmp/worker-238401-126870/cache/file-meta-3470c1e4a998dd5c56f0db1a5ca8d6d8
+2024/12/02 11:06:37.83 vine_worker[126870] debug: trashing file /tmp/worker-238401-126870/cache/file-meta-3470c1e4a998dd5c56f0db1a5ca8d6d8.meta
+2024/12/02 11:06:37.83 vine_worker[126870] vine: rx: unlink file-meta-520a14cfc834efccb022ed9038af80c2
+2024/12/02 11:06:37.83 vine_worker[126870] debug: trashing file /tmp/worker-238401-126870/cache/file-meta-520a14cfc834efccb022ed9038af80c2
+2024/12/02 11:06:37.83 vine_worker[126870] debug: trashing file /tmp/worker-238401-126870/cache/file-meta-520a14cfc834efccb022ed9038af80c2.meta
+2024/12/02 11:06:37.83 vine_worker[126870] vine: rx: unlink file-meta-0855d1e257c95491e5a707a1b50ba18e
+2024/12/02 11:06:37.83 vine_worker[126870] debug: trashing file /tmp/worker-238401-126870/cache/file-meta-0855d1e257c95491e5a707a1b50ba18e
+2024/12/02 11:06:37.83 vine_worker[126870] debug: trashing file /tmp/worker-238401-126870/cache/file-meta-0855d1e257c95491e5a707a1b50ba18e.meta
+2024/12/02 11:06:37.83 vine_worker[126870] vine: rx: unlink file-rnd-letdnncxtvoldas
+2024/12/02 11:06:37.83 vine_worker[126870] debug: trashing file /tmp/worker-238401-126870/cache/file-rnd-letdnncxtvoldas
+2024/12/02 11:06:37.83 vine_worker[126870] debug: trashing file /tmp/worker-238401-126870/cache/file-rnd-letdnncxtvoldas.meta
+2024/12/02 11:06:37.83 vine_worker[126870] vine: rx: kill 9
+2024/12/02 11:06:37.83 vine_worker[126870] debug: trashing file /tmp/worker-238401-126870/task.9
+2024/12/02 11:06:37.83 vine_worker[126870] vine: rx: put file-meta-18fe6b783bacaff9ae58f11dd06a0355 0 2539
+2024/12/02 11:06:37.83 vine_worker[126870] vine: rx: file file-meta-18fe6b783bacaff9ae58f11dd06a0355 2539 0644 1733155579
+2024/12/02 11:06:37.83 vine_worker[126870] vine: rx: put file-meta-09b335b9805b382ff7a586536ebfe0ca 0 401
+2024/12/02 11:06:37.83 vine_worker[126870] vine: rx: file file-meta-09b335b9805b382ff7a586536ebfe0ca 401 0644 1733155579
+2024/12/02 11:06:37.83 vine_worker[126870] vine: rx: put file-meta-8f23a35e53d72df38cbe6e382284d2c8 0 77
+2024/12/02 11:06:37.83 vine_worker[126870] vine: rx: file file-meta-8f23a35e53d72df38cbe6e382284d2c8 77 0644 1733155579
+2024/12/02 11:06:37.83 vine_worker[126870] vine: rx: task 10
+2024/12/02 11:06:37.83 vine_worker[126870] vine: rx: cmd 59
+2024/12/02 11:06:37.83 vine_worker[126870] vine: rx: python3 exec_parsl_function.py map function argument result
+2024/12/02 11:06:37.83 vine_worker[126870] vine: rx: category f2
+2024/12/02 11:06:37.83 vine_worker[126870] vine: rx: cores 12.000
+2024/12/02 11:06:37.83 vine_worker[126870] vine: rx: gpus 0
+2024/12/02 11:06:37.83 vine_worker[126870] vine: rx: memory 1024
+2024/12/02 11:06:37.83 vine_worker[126870] vine: rx: disk 10000
+2024/12/02 11:06:37.83 vine_worker[126870] vine: rx: infile file-meta-5afac46a2a071d24e20268ab16cafa27 exec_parsl_function.py 0
+2024/12/02 11:06:37.83 vine_worker[126870] vine: rx: infile file-meta-18fe6b783bacaff9ae58f11dd06a0355 function 0
+2024/12/02 11:06:37.83 vine_worker[126870] vine: rx: infile file-meta-09b335b9805b382ff7a586536ebfe0ca argument 0
+2024/12/02 11:06:37.83 vine_worker[126870] vine: rx: infile file-meta-8f23a35e53d72df38cbe6e382284d2c8 map 0
+2024/12/02 11:06:37.83 vine_worker[126870] vine: rx: infile temp-rnd-uthdpeynzrvlpqb file8-0-7 0
+2024/12/02 11:06:37.83 vine_worker[126870] vine: rx: outfile file-rnd-qsvrxyvrrwilppk result 0
+2024/12/02 11:06:37.83 vine_worker[126870] vine: rx: outfile temp-rnd-kxakefmtlzwgbuf file9-0-8 0
+2024/12/02 11:06:37.83 vine_worker[126870] vine: rx: end
+2024/12/02 11:06:37.83 vine_worker[126870] vine: input: link /tmp/worker-238401-126870/cache/file-meta-5afac46a2a071d24e20268ab16cafa27 -> /tmp/worker-238401-126870/task.10/exec_parsl_function.py
+2024/12/02 11:06:37.83 vine_worker[126870] vine: input: link /tmp/worker-238401-126870/cache/file-meta-18fe6b783bacaff9ae58f11dd06a0355 -> /tmp/worker-238401-126870/task.10/function
+2024/12/02 11:06:37.83 vine_worker[126870] vine: input: link /tmp/worker-238401-126870/cache/file-meta-09b335b9805b382ff7a586536ebfe0ca -> /tmp/worker-238401-126870/task.10/argument
+2024/12/02 11:06:37.84 vine_worker[126870] vine: input: link /tmp/worker-238401-126870/cache/file-meta-8f23a35e53d72df38cbe6e382284d2c8 -> /tmp/worker-238401-126870/task.10/map
+2024/12/02 11:06:37.84 vine_worker[126870] vine: input: link /tmp/worker-238401-126870/cache/temp-rnd-uthdpeynzrvlpqb -> /tmp/worker-238401-126870/task.10/file8-0-7
+2024/12/02 11:06:37.84 vine_worker[126870] vine: started task 10 pid 126949: python3 exec_parsl_function.py map function argument result
+2024/12/02 11:06:37.84 vine_worker[126870] vine: tx: info tasks_running 1
+2024/12/02 11:06:38.94 vine_worker[126870] vine: (MOD) task 10 (pid 126949) exited normally with exit code 0
+2024/12/02 11:06:38.94 vine_worker[126870] vine: output: measuring /tmp/worker-238401-126870/task.10/result
+2024/12/02 11:06:38.94 vine_worker[126870] vine: output: moving /tmp/worker-238401-126870/task.10/result to /tmp/worker-238401-126870/cache/file-rnd-qsvrxyvrrwilppk
+2024/12/02 11:06:38.94 vine_worker[126870] vine: tx: cache-update file-rnd-qsvrxyvrrwilppk 1 0 8 33188 1106650 1733155597840204 X
+2024/12/02 11:06:38.94 vine_worker[126870] vine: output: measuring /tmp/worker-238401-126870/task.10/file9-0-8
+2024/12/02 11:06:38.94 vine_worker[126870] vine: output: moving /tmp/worker-238401-126870/task.10/file9-0-8 to /tmp/worker-238401-126870/cache/temp-rnd-kxakefmtlzwgbuf
+2024/12/02 11:06:38.94 vine_worker[126870] vine: tx: cache-update temp-rnd-kxakefmtlzwgbuf 1 0 1000000 33188 1106650 1733155597840204 X
+2024/12/02 11:06:38.94 vine_worker[126870] vine: tx: complete 0 0 94 94 1733155597840204 1733155598946854 0 10
+1+0 records in
+1+0 records out
+1000000 bytes (1.0 MB, 977 KiB) copied, 0.00100771 s, 992 MB/s
+2024/12/02 11:06:38.94 vine_worker[126870] vine: rx: get file-rnd-qsvrxyvrrwilppk
+2024/12/02 11:06:38.94 vine_worker[126870] vine: tx: file file-rnd-qsvrxyvrrwilppk 8 0644 1733155598
+2024/12/02 11:06:38.94 vine_worker[126870] vine: rx: unlink file-meta-18fe6b783bacaff9ae58f11dd06a0355
+2024/12/02 11:06:38.94 vine_worker[126870] debug: trashing file /tmp/worker-238401-126870/cache/file-meta-18fe6b783bacaff9ae58f11dd06a0355
+2024/12/02 11:06:38.94 vine_worker[126870] debug: trashing file /tmp/worker-238401-126870/cache/file-meta-18fe6b783bacaff9ae58f11dd06a0355.meta
+2024/12/02 11:06:38.94 vine_worker[126870] vine: rx: unlink file-meta-09b335b9805b382ff7a586536ebfe0ca
+2024/12/02 11:06:38.94 vine_worker[126870] debug: trashing file /tmp/worker-238401-126870/cache/file-meta-09b335b9805b382ff7a586536ebfe0ca
+2024/12/02 11:06:38.94 vine_worker[126870] debug: trashing file /tmp/worker-238401-126870/cache/file-meta-09b335b9805b382ff7a586536ebfe0ca.meta
+2024/12/02 11:06:38.94 vine_worker[126870] vine: rx: unlink file-meta-8f23a35e53d72df38cbe6e382284d2c8
+2024/12/02 11:06:38.94 vine_worker[126870] debug: trashing file /tmp/worker-238401-126870/cache/file-meta-8f23a35e53d72df38cbe6e382284d2c8
+2024/12/02 11:06:38.94 vine_worker[126870] debug: trashing file /tmp/worker-238401-126870/cache/file-meta-8f23a35e53d72df38cbe6e382284d2c8.meta
+2024/12/02 11:06:38.94 vine_worker[126870] vine: rx: unlink file-rnd-qsvrxyvrrwilppk
+2024/12/02 11:06:38.94 vine_worker[126870] debug: trashing file /tmp/worker-238401-126870/cache/file-rnd-qsvrxyvrrwilppk
+2024/12/02 11:06:38.94 vine_worker[126870] debug: trashing file /tmp/worker-238401-126870/cache/file-rnd-qsvrxyvrrwilppk.meta
+2024/12/02 11:06:38.94 vine_worker[126870] vine: rx: kill 10
+2024/12/02 11:06:38.94 vine_worker[126870] debug: trashing file /tmp/worker-238401-126870/task.10
+2024/12/02 11:06:38.94 vine_worker[126870] vine: rx: put file-meta-03326713c9bb13769e2d67d14a865eb8 0 2539
+2024/12/02 11:06:38.94 vine_worker[126870] vine: rx: file file-meta-03326713c9bb13769e2d67d14a865eb8 2539 0644 1733155579
+2024/12/02 11:06:38.94 vine_worker[126870] vine: rx: put file-meta-de8c29f7960bcb9f437d46a2951f05c8 0 404
+2024/12/02 11:06:38.94 vine_worker[126870] vine: rx: file file-meta-de8c29f7960bcb9f437d46a2951f05c8 404 0644 1733155579
+2024/12/02 11:06:38.94 vine_worker[126870] vine: rx: put file-meta-0021bc595fe145c59e44a685c190e2b4 0 78
+2024/12/02 11:06:38.94 vine_worker[126870] vine: rx: file file-meta-0021bc595fe145c59e44a685c190e2b4 78 0644 1733155579
+2024/12/02 11:06:38.94 vine_worker[126870] vine: rx: task 11
+2024/12/02 11:06:38.94 vine_worker[126870] vine: rx: cmd 59
+2024/12/02 11:06:38.94 vine_worker[126870] vine: rx: python3 exec_parsl_function.py map function argument result
+2024/12/02 11:06:38.94 vine_worker[126870] vine: rx: category f2
+2024/12/02 11:06:38.94 vine_worker[126870] vine: rx: cores 12.000
+2024/12/02 11:06:38.94 vine_worker[126870] vine: rx: gpus 0
+2024/12/02 11:06:38.94 vine_worker[126870] vine: rx: memory 1024
+2024/12/02 11:06:38.94 vine_worker[126870] vine: rx: disk 10000
+2024/12/02 11:06:38.94 vine_worker[126870] vine: rx: infile file-meta-5afac46a2a071d24e20268ab16cafa27 exec_parsl_function.py 0
+2024/12/02 11:06:38.94 vine_worker[126870] vine: rx: infile file-meta-03326713c9bb13769e2d67d14a865eb8 function 0
+2024/12/02 11:06:38.94 vine_worker[126870] vine: rx: infile file-meta-de8c29f7960bcb9f437d46a2951f05c8 argument 0
+2024/12/02 11:06:38.94 vine_worker[126870] vine: rx: infile file-meta-0021bc595fe145c59e44a685c190e2b4 map 0
+2024/12/02 11:06:38.94 vine_worker[126870] vine: rx: infile temp-rnd-kxakefmtlzwgbuf file9-0-8 0
+2024/12/02 11:06:38.94 vine_worker[126870] vine: rx: outfile file-rnd-kbxvhvxzaxxhlfl result 0
+2024/12/02 11:06:38.94 vine_worker[126870] vine: rx: outfile temp-rnd-wyaaberkefuanwv file10-0-9 0
+2024/12/02 11:06:38.94 vine_worker[126870] vine: rx: end
+2024/12/02 11:06:38.94 vine_worker[126870] vine: input: link /tmp/worker-238401-126870/cache/file-meta-5afac46a2a071d24e20268ab16cafa27 -> /tmp/worker-238401-126870/task.11/exec_parsl_function.py
+2024/12/02 11:06:38.94 vine_worker[126870] vine: input: link /tmp/worker-238401-126870/cache/file-meta-03326713c9bb13769e2d67d14a865eb8 -> /tmp/worker-238401-126870/task.11/function
+2024/12/02 11:06:38.94 vine_worker[126870] vine: input: link /tmp/worker-238401-126870/cache/file-meta-de8c29f7960bcb9f437d46a2951f05c8 -> /tmp/worker-238401-126870/task.11/argument
+2024/12/02 11:06:38.94 vine_worker[126870] vine: input: link /tmp/worker-238401-126870/cache/file-meta-0021bc595fe145c59e44a685c190e2b4 -> /tmp/worker-238401-126870/task.11/map
+2024/12/02 11:06:38.94 vine_worker[126870] vine: input: link /tmp/worker-238401-126870/cache/temp-rnd-kxakefmtlzwgbuf -> /tmp/worker-238401-126870/task.11/file9-0-8
+2024/12/02 11:06:38.94 vine_worker[126870] vine: started task 11 pid 126957: python3 exec_parsl_function.py map function argument result
+2024/12/02 11:06:38.94 vine_worker[126870] vine: tx: info tasks_running 1
+2024/12/02 11:06:40.03 vine_worker[126870] vine: (MOD) task 11 (pid 126957) exited normally with exit code 0
+2024/12/02 11:06:40.03 vine_worker[126870] vine: output: measuring /tmp/worker-238401-126870/task.11/result
+2024/12/02 11:06:40.03 vine_worker[126870] vine: output: moving /tmp/worker-238401-126870/task.11/result to /tmp/worker-238401-126870/cache/file-rnd-kbxvhvxzaxxhlfl
+2024/12/02 11:06:40.03 vine_worker[126870] vine: tx: cache-update file-rnd-kbxvhvxzaxxhlfl 1 0 8 33188 1086906 1733155598949132 X
+2024/12/02 11:06:40.03 vine_worker[126870] vine: output: measuring /tmp/worker-238401-126870/task.11/file10-0-9
+2024/12/02 11:06:40.03 vine_worker[126870] vine: output: moving /tmp/worker-238401-126870/task.11/file10-0-9 to /tmp/worker-238401-126870/cache/temp-rnd-wyaaberkefuanwv
+2024/12/02 11:06:40.03 vine_worker[126870] vine: tx: cache-update temp-rnd-wyaaberkefuanwv 1 0 1000000 33188 1086906 1733155598949132 X
+2024/12/02 11:06:40.03 vine_worker[126870] vine: tx: complete 0 0 93 93 1733155598949132 1733155600036038 0 11
+1+0 records in
+1+0 records out
+1000000 bytes (1.0 MB, 977 KiB) copied, 0.0011044 s, 905 MB/s
+2024/12/02 11:06:40.03 vine_worker[126870] vine: rx: get file-rnd-kbxvhvxzaxxhlfl
+2024/12/02 11:06:40.03 vine_worker[126870] vine: tx: file file-rnd-kbxvhvxzaxxhlfl 8 0644 1733155599
+2024/12/02 11:06:40.03 vine_worker[126870] vine: rx: unlink file-meta-03326713c9bb13769e2d67d14a865eb8
+2024/12/02 11:06:40.03 vine_worker[126870] debug: trashing file /tmp/worker-238401-126870/cache/file-meta-03326713c9bb13769e2d67d14a865eb8
+2024/12/02 11:06:40.03 vine_worker[126870] debug: trashing file /tmp/worker-238401-126870/cache/file-meta-03326713c9bb13769e2d67d14a865eb8.meta
+2024/12/02 11:06:40.03 vine_worker[126870] vine: rx: unlink file-meta-de8c29f7960bcb9f437d46a2951f05c8
+2024/12/02 11:06:40.03 vine_worker[126870] debug: trashing file /tmp/worker-238401-126870/cache/file-meta-de8c29f7960bcb9f437d46a2951f05c8
+2024/12/02 11:06:40.03 vine_worker[126870] debug: trashing file /tmp/worker-238401-126870/cache/file-meta-de8c29f7960bcb9f437d46a2951f05c8.meta
+2024/12/02 11:06:40.03 vine_worker[126870] vine: rx: unlink file-meta-0021bc595fe145c59e44a685c190e2b4
+2024/12/02 11:06:40.03 vine_worker[126870] debug: trashing file /tmp/worker-238401-126870/cache/file-meta-0021bc595fe145c59e44a685c190e2b4
+2024/12/02 11:06:40.03 vine_worker[126870] debug: trashing file /tmp/worker-238401-126870/cache/file-meta-0021bc595fe145c59e44a685c190e2b4.meta
+2024/12/02 11:06:40.03 vine_worker[126870] vine: rx: unlink file-rnd-kbxvhvxzaxxhlfl
+2024/12/02 11:06:40.03 vine_worker[126870] debug: trashing file /tmp/worker-238401-126870/cache/file-rnd-kbxvhvxzaxxhlfl
+2024/12/02 11:06:40.03 vine_worker[126870] debug: trashing file /tmp/worker-238401-126870/cache/file-rnd-kbxvhvxzaxxhlfl.meta
+2024/12/02 11:06:40.03 vine_worker[126870] vine: rx: kill 11
+2024/12/02 11:06:40.03 vine_worker[126870] debug: trashing file /tmp/worker-238401-126870/task.11
+2024/12/02 11:06:40.03 vine_worker[126870] vine: rx: put file-meta-371964d6b50b3eecd3909e0083d37b19 0 2455
+2024/12/02 11:06:40.03 vine_worker[126870] vine: rx: file file-meta-371964d6b50b3eecd3909e0083d37b19 2455 0644 1733155579
+2024/12/02 11:06:40.03 vine_worker[126870] vine: rx: put file-meta-78bc8852e84232e7bd6d0441bc95ed15 0 293
+2024/12/02 11:06:40.03 vine_worker[126870] vine: rx: file file-meta-78bc8852e84232e7bd6d0441bc95ed15 293 0644 1733155579
+2024/12/02 11:06:40.03 vine_worker[126870] vine: rx: put file-meta-b68ea008eac06e52321f4a213b591813 0 48
+2024/12/02 11:06:40.03 vine_worker[126870] vine: rx: file file-meta-b68ea008eac06e52321f4a213b591813 48 0644 1733155579
+2024/12/02 11:06:40.03 vine_worker[126870] vine: rx: task 12
+2024/12/02 11:06:40.03 vine_worker[126870] vine: rx: cmd 59
+2024/12/02 11:06:40.03 vine_worker[126870] vine: rx: python3 exec_parsl_function.py map function argument result
+2024/12/02 11:06:40.03 vine_worker[126870] vine: rx: category f3
+2024/12/02 11:06:40.03 vine_worker[126870] vine: rx: cores 12.000
+2024/12/02 11:06:40.03 vine_worker[126870] vine: rx: gpus 0
+2024/12/02 11:06:40.03 vine_worker[126870] vine: rx: memory 1024
+2024/12/02 11:06:40.03 vine_worker[126870] vine: rx: disk 10000
+2024/12/02 11:06:40.03 vine_worker[126870] vine: rx: infile file-meta-5afac46a2a071d24e20268ab16cafa27 exec_parsl_function.py 0
+2024/12/02 11:06:40.03 vine_worker[126870] vine: rx: infile file-meta-371964d6b50b3eecd3909e0083d37b19 function 0
+2024/12/02 11:06:40.03 vine_worker[126870] vine: rx: infile file-meta-78bc8852e84232e7bd6d0441bc95ed15 argument 0
+2024/12/02 11:06:40.03 vine_worker[126870] vine: rx: infile file-meta-b68ea008eac06e52321f4a213b591813 map 0
+2024/12/02 11:06:40.03 vine_worker[126870] vine: rx: infile temp-rnd-wyaaberkefuanwv file10-0-9 0
+2024/12/02 11:06:40.03 vine_worker[126870] vine: rx: outfile file-rnd-wtbdngnonbkjanc result 0
+2024/12/02 11:06:40.03 vine_worker[126870] vine: rx: end
+2024/12/02 11:06:40.03 vine_worker[126870] vine: input: link /tmp/worker-238401-126870/cache/file-meta-5afac46a2a071d24e20268ab16cafa27 -> /tmp/worker-238401-126870/task.12/exec_parsl_function.py
+2024/12/02 11:06:40.03 vine_worker[126870] vine: input: link /tmp/worker-238401-126870/cache/file-meta-371964d6b50b3eecd3909e0083d37b19 -> /tmp/worker-238401-126870/task.12/function
+2024/12/02 11:06:40.03 vine_worker[126870] vine: input: link /tmp/worker-238401-126870/cache/file-meta-78bc8852e84232e7bd6d0441bc95ed15 -> /tmp/worker-238401-126870/task.12/argument
+2024/12/02 11:06:40.03 vine_worker[126870] vine: input: link /tmp/worker-238401-126870/cache/file-meta-b68ea008eac06e52321f4a213b591813 -> /tmp/worker-238401-126870/task.12/map
+2024/12/02 11:06:40.03 vine_worker[126870] vine: input: link /tmp/worker-238401-126870/cache/temp-rnd-wyaaberkefuanwv -> /tmp/worker-238401-126870/task.12/file10-0-9
+2024/12/02 11:06:40.03 vine_worker[126870] vine: started task 12 pid 126964: python3 exec_parsl_function.py map function argument result
+2024/12/02 11:06:40.03 vine_worker[126870] vine: tx: info tasks_running 1
+2024/12/02 11:06:41.12 vine_worker[126870] vine: (MOD) task 12 (pid 126964) exited normally with exit code 0
+2024/12/02 11:06:41.12 vine_worker[126870] vine: output: measuring /tmp/worker-238401-126870/task.12/result
+2024/12/02 11:06:41.12 vine_worker[126870] vine: output: moving /tmp/worker-238401-126870/task.12/result to /tmp/worker-238401-126870/cache/file-rnd-wtbdngnonbkjanc
+2024/12/02 11:06:41.12 vine_worker[126870] vine: tx: cache-update file-rnd-wtbdngnonbkjanc 1 0 8 33188 1090139 1733155600038229 X
+2024/12/02 11:06:41.12 vine_worker[126870] vine: tx: complete 0 0 1000000 0 1733155600038229 1733155601128368 0 12
+2024/12/02 11:06:41.12 vine_worker[126870] vine: rx: send_stdout 12
+2024/12/02 11:06:41.12 vine_worker[126870] vine: tx: stdout 12 1000000
+2024/12/02 11:06:41.12 vine_worker[126870] vine: rx: get file-rnd-wtbdngnonbkjanc
+2024/12/02 11:06:41.12 vine_worker[126870] vine: tx: file file-rnd-wtbdngnonbkjanc 8 0644 1733155601
+2024/12/02 11:06:41.12 vine_worker[126870] vine: rx: unlink file-meta-371964d6b50b3eecd3909e0083d37b19
+2024/12/02 11:06:41.12 vine_worker[126870] debug: trashing file /tmp/worker-238401-126870/cache/file-meta-371964d6b50b3eecd3909e0083d37b19
+2024/12/02 11:06:41.12 vine_worker[126870] debug: trashing file /tmp/worker-238401-126870/cache/file-meta-371964d6b50b3eecd3909e0083d37b19.meta
+2024/12/02 11:06:41.12 vine_worker[126870] vine: rx: unlink file-meta-78bc8852e84232e7bd6d0441bc95ed15
+2024/12/02 11:06:41.12 vine_worker[126870] debug: trashing file /tmp/worker-238401-126870/cache/file-meta-78bc8852e84232e7bd6d0441bc95ed15
+2024/12/02 11:06:41.12 vine_worker[126870] debug: trashing file /tmp/worker-238401-126870/cache/file-meta-78bc8852e84232e7bd6d0441bc95ed15.meta
+2024/12/02 11:06:41.12 vine_worker[126870] vine: rx: unlink file-meta-b68ea008eac06e52321f4a213b591813
+2024/12/02 11:06:41.12 vine_worker[126870] debug: trashing file /tmp/worker-238401-126870/cache/file-meta-b68ea008eac06e52321f4a213b591813
+2024/12/02 11:06:41.12 vine_worker[126870] debug: trashing file /tmp/worker-238401-126870/cache/file-meta-b68ea008eac06e52321f4a213b591813.meta
+2024/12/02 11:06:41.12 vine_worker[126870] vine: rx: unlink file-rnd-wtbdngnonbkjanc
+2024/12/02 11:06:41.12 vine_worker[126870] debug: trashing file /tmp/worker-238401-126870/cache/file-rnd-wtbdngnonbkjanc
+2024/12/02 11:06:41.13 vine_worker[126870] debug: trashing file /tmp/worker-238401-126870/cache/file-rnd-wtbdngnonbkjanc.meta
+2024/12/02 11:06:41.13 vine_worker[126870] vine: rx: kill 12
+2024/12/02 11:06:41.13 vine_worker[126870] debug: trashing file /tmp/worker-238401-126870/task.12
+2024/12/02 11:06:42.13 vine_worker[126870] vine: rx: release
+2024/12/02 11:06:42.13 vine_worker[126870] vine: released by manager 10.32.85.31:9285.
+2024/12/02 11:06:42.13 vine_worker[126870] vine: disconnecting from manager 10.32.85.31:9285
+2024/12/02 11:06:42.13 vine_worker[126870] tcp: disconnected from 10.32.85.31 port 9285
+2024/12/02 11:06:42.13 vine_worker[126870] vine: killing all outstanding tasks
+2024/12/02 11:06:42.13 vine_worker[126870] vine: all data structures are clean
+2024/12/02 11:06:42.13 vine_worker[126870] vine: stopping transfer server pid 126884
+2024/12/02 11:06:42.13 vine_worker[126870] debug: trashing file /tmp/worker-238401-126870/cache/temp-rnd-jccavozwzebzcxl
+2024/12/02 11:06:42.13 vine_worker[126870] debug: trashing file /tmp/worker-238401-126870/cache/temp-rnd-jccavozwzebzcxl.meta
+2024/12/02 11:06:42.13 vine_worker[126870] debug: trashing file /tmp/worker-238401-126870/cache/temp-rnd-uktapqtoenyeeyr
+2024/12/02 11:06:42.13 vine_worker[126870] debug: trashing file /tmp/worker-238401-126870/cache/temp-rnd-uktapqtoenyeeyr.meta
+2024/12/02 11:06:42.13 vine_worker[126870] debug: trashing file /tmp/worker-238401-126870/cache/temp-rnd-cuvlheuktvsmetj
+2024/12/02 11:06:42.13 vine_worker[126870] debug: trashing file /tmp/worker-238401-126870/cache/temp-rnd-cuvlheuktvsmetj.meta
+2024/12/02 11:06:42.13 vine_worker[126870] debug: trashing file /tmp/worker-238401-126870/cache/temp-rnd-wyaaberkefuanwv
+2024/12/02 11:06:42.13 vine_worker[126870] debug: trashing file /tmp/worker-238401-126870/cache/temp-rnd-wyaaberkefuanwv.meta
+2024/12/02 11:06:42.13 vine_worker[126870] debug: trashing file /tmp/worker-238401-126870/cache/temp-rnd-kxakefmtlzwgbuf
+2024/12/02 11:06:42.13 vine_worker[126870] debug: trashing file /tmp/worker-238401-126870/cache/temp-rnd-kxakefmtlzwgbuf.meta
+2024/12/02 11:06:42.13 vine_worker[126870] debug: trashing file /tmp/worker-238401-126870/cache/file-meta-5afac46a2a071d24e20268ab16cafa27
+2024/12/02 11:06:42.13 vine_worker[126870] debug: trashing file /tmp/worker-238401-126870/cache/file-meta-5afac46a2a071d24e20268ab16cafa27.meta
+2024/12/02 11:06:42.13 vine_worker[126870] debug: trashing file /tmp/worker-238401-126870/cache/temp-rnd-cqfzagfddvtdaok
+2024/12/02 11:06:42.13 vine_worker[126870] debug: trashing file /tmp/worker-238401-126870/cache/temp-rnd-cqfzagfddvtdaok.meta
+2024/12/02 11:06:42.13 vine_worker[126870] debug: trashing file /tmp/worker-238401-126870/cache/temp-rnd-uthdpeynzrvlpqb
+2024/12/02 11:06:42.13 vine_worker[126870] debug: trashing file /tmp/worker-238401-126870/cache/temp-rnd-uthdpeynzrvlpqb.meta
+2024/12/02 11:06:42.13 vine_worker[126870] debug: trashing file /tmp/worker-238401-126870/cache/temp-rnd-wsrmzqwqcdacezt
+2024/12/02 11:06:42.13 vine_worker[126870] debug: trashing file /tmp/worker-238401-126870/cache/temp-rnd-wsrmzqwqcdacezt.meta
+2024/12/02 11:06:42.13 vine_worker[126870] debug: trashing file /tmp/worker-238401-126870/cache/temp-rnd-vipbrtzkbngixuk
+2024/12/02 11:06:42.13 vine_worker[126870] debug: trashing file /tmp/worker-238401-126870/cache/temp-rnd-vipbrtzkbngixuk.meta
+2024/12/02 11:06:42.13 vine_worker[126870] debug: trashing file /tmp/worker-238401-126870/cache/temp-rnd-thhztrwvzdtybgt
+2024/12/02 11:06:42.14 vine_worker[126870] debug: trashing file /tmp/worker-238401-126870/cache/temp-rnd-thhztrwvzdtybgt.meta
+2024/12/02 11:06:42.14 vine_worker[126870] debug: trashing file /tmp/worker-238401-126870/cache/temp-rnd-swdanmqxbyiuttb
+2024/12/02 11:06:42.14 vine_worker[126870] debug: trashing file /tmp/worker-238401-126870/cache/temp-rnd-swdanmqxbyiuttb.meta
+2024/12/02 11:06:42.14 vine_worker[126870] vine: cleaning workspace /tmp/worker-238401-126870
+2024/12/02 11:06:42.14 vine_worker[126870] debug: trashing file transfer
+2024/12/02 11:06:42.14 vine_worker[126870] debug: trashing file temp
+2024/12/02 11:06:43.14 vine_worker[126870] tcp: connecting to 10.32.85.31 port 9285
+2024/12/02 11:06:43.14 vine_worker[126870] tcp: connection to 10.32.85.31 port 9285 failed (Connection refused)
+2024/12/02 11:06:43.14 vine_worker[126870] tcp: disconnected from 10.32.85.31 port 9285
+2024/12/02 11:06:45.14 vine_worker[126870] tcp: connecting to 10.32.85.31 port 9285
+2024/12/02 11:06:45.14 vine_worker[126870] tcp: connection to 10.32.85.31 port 9285 failed (Connection refused)
+2024/12/02 11:06:45.14 vine_worker[126870] tcp: disconnected from 10.32.85.31 port 9285
+2024/12/02 11:06:45.83 vine_worker[126870] tcp: connecting to 10.32.85.31 port 9285
+2024/12/02 11:06:45.83 vine_worker[126870] tcp: connection to 10.32.85.31 port 9285 failed (Connection refused)
+2024/12/02 11:06:45.83 vine_worker[126870] tcp: disconnected from 10.32.85.31 port 9285
+2024/12/02 11:06:45.83 vine_worker[126870] notice: stopping: abort signal received

@@ -29,7 +29,7 @@ struct vine_worker_options *vine_worker_options_create()
 	memset(self, 0, sizeof(*self));
 
 	self->gpus_total = -1;
-	self->idle_timeout = 900;
+	self->idle_timeout = 60;
 	self->connect_timeout = 900;
 	self->active_timeout = 3600;
 

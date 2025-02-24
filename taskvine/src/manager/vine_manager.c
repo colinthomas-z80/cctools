@@ -289,6 +289,7 @@ static void handle_idle_disconnect_request(struct vine_manager *q, struct vine_w
 				debug(D_VINE, "Rejecting disconnect request from worker %s (%s). Has unique file %s", w->hostname, w->addrport, cachename);
 				return;
 			}
+			debug(D_VINE, "Replica count %d", c);
 		}
 	}
 
@@ -3507,19 +3508,20 @@ static int send_one_task(struct vine_manager *q)
 		q->stats->time_scheduling += timestamp_get() - q->stats_measure->time_scheduling;
 
 		if (w) {
-			priority_queue_remove(q->ready_tasks, t_idx);
 
 			// do not continue if this worker is running a group task
-			if (q->task_groups_enabled) {
+			if (0){//q->task_groups_enabled) {
 				struct vine_task *it;
 				uint64_t taskid;
 				ITABLE_ITERATE(w->current_tasks, taskid, it)
 				{
-					if (it->group_id) {
+					if (it->group_id && t->group_id) {
 						return 0;
 					}
 				}
 			}
+			
+			priority_queue_remove(q->ready_tasks, t_idx);
 
 			vine_result_code_t result;
 			if (q->task_groups_enabled) {
@@ -5267,7 +5269,7 @@ static struct vine_task *vine_wait_internal(struct vine_manager *q, int timeout,
 		if (q->fixed_location_in_queue) {
 
 			BEGIN_ACCUM_TIME(q, time_internal);
-			result = enforce_waiting_fixed_locations(q);
+			result = 0; //enforce_waiting_fixed_locations(q);
 			END_ACCUM_TIME(q, time_internal);
 			if (result > 0) {
 				retrieved_this_cycle += result;
