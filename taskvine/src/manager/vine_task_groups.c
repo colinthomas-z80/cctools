@@ -56,7 +56,7 @@ int vine_task_groups_assign_task(struct vine_manager *q, struct vine_task *t)
 
 	LIST_ITERATE(t->input_mounts, input_mount)
 	{
-		if (input_mount->file->type == VINE_TEMP) {
+		if (input_mount->file->type == VINE_TEMP && input_mount->file->recovery_task) {
 			inputs_present++;
 			break;
 		}
