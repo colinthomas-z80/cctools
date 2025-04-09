@@ -3033,7 +3033,7 @@ static vine_result_code_t commit_task_group_to_worker(struct vine_manager *q, st
 		l = itable_lookup(q->task_group_table, t->group_id);
 		list_remove(l, t);
 		// decrement refcount
-		vine_task_delete(t);
+		//vine_task_delete(t);
 	}
 
 	int counter = 0;

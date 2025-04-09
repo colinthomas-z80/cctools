@@ -33,9 +33,12 @@ static int vine_task_groups_add_to_group(struct vine_manager *q, struct vine_tas
 
 	if (id) {
 		struct list *group = itable_lookup(q->task_group_table, id);
+		if(list_size(group) <= 3)
+		{
 		t->group_id = id;
 		struct vine_task *tc = vine_task_addref(t);
 		list_push_tail(group, tc);
+		}
 	}
 
 	return 0;
