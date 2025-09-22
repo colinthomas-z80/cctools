@@ -108,7 +108,7 @@ find_path_in_list(struct list *c,
 	while ((x = list_next_item(c))) {
 		struct path_access *a = x;
 		// XXX: Something of value here might be to check the tail before looping
-		if (strcmp(a->pathname, path) == 0) {
+		if (strstr(path, a->pathname) != NULL) {
 			return a;
 		}
 	}
@@ -175,37 +175,78 @@ void add_path_to_contract_list(struct list **r,
 /// if @param f is NULL, then the contract gets dumped to stderr
 void generate_contract_from_list(FILE *f, struct list *r)
 {
+	// Temporary structure to hold directory info
+	struct dir_info {
+		char *dirname;
+		uint8_t access_fl;
+		int count;
+		struct dir_info *next;
+	};
+
+	struct dir_info *dirs = NULL;
+
 	list_first_item(r);
 	struct path_access *a;
-	char perms[16] = {0};
-	FILE *o = f;
-	if (f == NULL)
-		o = stderr;
-	char *col1_title = "Access";
-	char *col2_title = "<Path>";
-	char *col3_title = "Count";
-	fprintf(o, "%-12s %-14s %s\n", col1_title, col2_title, col3_title);
 	while ((a = list_next_item(r))) {
-		// THINK: This might need to become a function
-		if (a->metadata)
-			strcat(perms, "M");
-		if (a->create)
-			strcat(perms, "C");
-		if (a->delete)
-			strcat(perms, "D");
-		if (a->read)
-			strcat(perms, "R");
-		if (a->write)
-			strcat(perms, "W");
-		if (a->list)
-			strcat(perms, "L");
+		// Extract directory from pathname
+		char *path = a->pathname;
+		char dirbuf[MAXPATHLEN];
+		strncpy(dirbuf, path, MAXPATHLEN);
+		char *slash = strrchr(dirbuf, '/');
+		if (slash) {
+			*slash = '\0';
+		} else {
+			strcpy(dirbuf, ".");
+		}
 
-		if (a->error)
-			strcat(perms, "E");
+		// Search for existing dir_info
+		struct dir_info *d = dirs;
+		while (d) {
+			if (strcmp(d->dirname, dirbuf) == 0)
+				break;
+			d = d->next;
+		}
+		if (!d) {
+			// New directory
+			d = malloc(sizeof(struct dir_info));
+			d->dirname = strdup(dirbuf);
+			d->access_fl = 0;
+			d->count = 0;
+			d->next = dirs;
+			dirs = d;
+		}
+		// Combine access flags and count
+		d->access_fl |= (a->read ? READ_ACCESS : 0)
+			| (a->write ? WRITE_ACCESS : 0)
+			| (a->metadata ? METADATA_ACCESS : 0)
+			| (a->create ? CREATE_ACCESS : 0)
+			| (a->delete ? DELETE_ACCESS : 0)
+			| (a->list ? LIST_ACCESS : 0)
+			| (a->error ? ERROR_ACCESS : 0);
+		d->count += a->count;
+	}
 
-		fprintf(o, "%-12s <%s> %d\n", perms, a->pathname, a->count);
+	FILE *o = f ? f : stderr;
+	fprintf(o, "%-12s %-14s %s\n", "Access", "<Directory>", "Count");
+	for (struct dir_info *d = dirs; d; d = d->next) {
+		char perms[16] = {0};
+		if (d->access_fl & METADATA_ACCESS) strcat(perms, "M");
+		if (d->access_fl & CREATE_ACCESS) strcat(perms, "C");
+		if (d->access_fl & DELETE_ACCESS) strcat(perms, "D");
+		if (d->access_fl & READ_ACCESS) strcat(perms, "R");
+		if (d->access_fl & WRITE_ACCESS) strcat(perms, "W");
+		if (d->access_fl & LIST_ACCESS) strcat(perms, "L");
+		if (d->access_fl & ERROR_ACCESS) strcat(perms, "E");
 
-		memset(perms, 0, sizeof(perms)); // reset
+		fprintf(o, "%-12s <%s> %d\n", perms, d->dirname, d->count);
+	}
+
+	// Free dir_info list
+	while (dirs) {
+		struct dir_info *tmp = dirs;
+		dirs = dirs->next;
+		free(tmp->dirname);
+		free(tmp);
 	}
 	fflush(f);
 }

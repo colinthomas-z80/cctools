@@ -27,7 +27,7 @@ libenforcer.$(CCTOOLS_DYNAMIC_SUFFIX): enforcer.o $(EXTERNAL_DEPENDENCIES) $(COM
 	$(CCTOOLS_CC) $(CCTOOLS_BASE_CCFLAGS) $(CCTOOLS_INTERNAL_CCFLAGS) $(CCTOOLS_EXTERNAL_LINKAGE_NO_OPENSSL)  $(CCTOOLS_DYNAMIC_FLAG) -o $@ $^
 
 libenforcer.h: libenforcer.$(CCTOOLS_DYNAMIC_SUFFIX)
-	xxd -i -n minienforcer $< > $@
+#	xxd -i -n minienforcer $< > $@
 
 pledge.o: pledge.c libenforcer.h
 

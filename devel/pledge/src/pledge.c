@@ -594,6 +594,7 @@ int main(int argc,
 		fprintf(stderr, "[Tracing started...]\n");
 		tracer(argc, argv, cmd_idx);
 	} else if (enforce_f) {
+		/*
 		FILE *mini_enf_f = fopen("minienforcer.so", "wb");
 		if (mini_enf_f == NULL) {
 			fprintf(stderr, "Failed to generate minienforcer.so...\n");
@@ -605,10 +606,13 @@ int main(int argc,
 		// -rwxr-xr-x
 		chmod("minienforcer.so",
 				S_IRUSR | S_IWUSR | S_IXUSR | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH);
+				*/
 		enforcer(argc, argv, cmd_idx);
+		
 		// XXX: maybe dont remove everytime, maybe we can cache and let the user decide
 		// if we delete
-		remove("minienforcer.so");
+		//remove("minienforcer.so");
+
 	} else {
 		fprintf(stderr, "ERROR: No action provided for PLEDGE...\n");
 		pledge_help();
