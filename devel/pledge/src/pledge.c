@@ -334,6 +334,120 @@ void enforcer(int argc,
 	}
 }
 
+/// create a contract with an existing strace output
+void create_contract_existing_input(int argc,
+		char **argv,
+		int tr_cmd_idx)
+{
+
+	char *log_name = argv[2];
+	char contract_name[FILENAME_MAX] = {0}; 
+
+	
+	snprintf(contract_name, FILENAME_MAX, "%s.contract", log_name);
+
+	FILE *strace_raw = fopen(log_name, "r");
+	if (strace_raw == NULL) {
+		fprintf(stderr, "Failed to open strace log %s for reading...\n", log_name);
+		exit(EXIT_FAILURE);
+	}
+
+	int str_siz = 0;
+	char *strace_line = NULL;
+	size_t temp_access_fl = 0x0;
+	struct path_bundle *paths = malloc(sizeof(struct path_bundle));
+	memset(paths, 0, sizeof(struct path_bundle));
+	struct list *root = list_create();
+
+
+
+	// SECTION: Parsing
+	while (getline(&strace_line, &str_siz, strace_raw) != -1) {
+		paths_from_strace_line(paths, strace_line);
+		// SECTION: openat
+		// We give opencalls a metadata flag
+		if (strstr(strace_line, "openat(") != NULL) {
+			if (strstr(strace_line, "O_CREAT") != NULL)
+				temp_access_fl |= CREATE_ACCESS;
+			if (strstr(strace_line, "ENOENT") != NULL)
+				temp_access_fl |= ERROR_ACCESS;
+
+			insert_paths_to_contract(&root, paths, temp_access_fl | METADATA_ACCESS, false);
+			temp_access_fl = 0x0;
+		}
+		// SECTION: Stat
+		// This is a metadata operation now
+		else if (strstr(strace_line, "newfstatat(") != NULL) {
+			insert_paths_to_contract(&root, paths, METADATA_ACCESS, false);
+		}
+		// SECTION: read & write
+		// The syscall itself tells you the operation
+		else if (strstr(strace_line, "read(") != NULL) {
+			insert_paths_to_contract(&root, paths, READ_ACCESS, true);
+		} else if (strstr(strace_line, "write(") != NULL) {
+			insert_paths_to_contract(&root, paths, WRITE_ACCESS, true);
+		}
+		// SECTION: execve
+		// execve at the bottom because what if text containing
+		// execve is a parameter of one of the functions (like read)
+		else if (strstr(strace_line, "execve(") != NULL) {
+			// XXX: Subprocesses are very important, not only for DAG
+			// but also because some calls are labeled unfinished
+
+			// execve is special in that we only really care about the first path
+			// so we will go directly to the source here
+			char cmd_abs[MAXPATHLEN] = {0};
+			if (paths->quote_count > 0) {
+				rel2abspath(cmd_abs, paths->quote_paths[0], MAXPATHLEN);
+				add_path_to_contract_list(&root, cmd_abs, READ_ACCESS);
+			}
+		}
+		// SECTION: mmap
+		// THINK: Should MAP_PRIVATE be handled a certain way?
+		else if (strstr(strace_line, "mmap(") != NULL) {
+			if (strstr(strace_line, "PROT_READ|PROT_WRITE") != NULL)
+				temp_access_fl = (READ_ACCESS | WRITE_ACCESS);
+			if (strstr(strace_line, "PROT_READ") != NULL)
+				temp_access_fl = READ_ACCESS;
+			if (strstr(strace_line, "PROT_WRITE") != NULL)
+				temp_access_fl = WRITE_ACCESS;
+
+			if (temp_access_fl) {
+				insert_paths_to_contract(&root, paths, temp_access_fl, true);
+			}
+			temp_access_fl = 0x0;
+		}
+		// Delete operation needs write access,
+		// but we do not care about access rights, only what is actually done,
+		// although... deleting, even if its metadata,
+		// does write something to the disk kinda ish
+		else if (strstr(strace_line, "unlinkat(") != NULL) {
+			insert_paths_to_contract(&root, paths, DELETE_ACCESS | WRITE_ACCESS, true);
+		}
+		// SECTION: getdents
+		// Get directory entries
+		// aka we looking at the entries in a directory
+		else if (strstr(strace_line, "getdents64(")) {
+			insert_paths_to_contract(&root, paths, LIST_ACCESS, true);
+		}
+		memset(paths, 0, sizeof(struct path_bundle));
+	}
+	free(paths);
+	free(strace_line);
+
+	FILE *ctr = fopen(contract_name, "w");
+	if (ctr == NULL) {
+		fprintf(stderr, "Failed to open contract file for writing...\n");
+	}
+	generate_contract_from_list(ctr, root);
+	fprintf(stderr, "[Tracer: Contract generated   -> %s]\n", contract_name);
+	//destroy_contract_list(root);
+	//list_delete(root);
+	// fclose(strace_raw);
+	fclose(ctr);
+}
+
+
 /// @param tr_cmd_idx: Tracer command index, its the index in the argv array of where
 /// the commands for the tracer start
 void tracer(int argc,
@@ -451,7 +565,7 @@ void tracer(int argc,
 			exit(EXIT_FAILURE);
 		}
 		char *strace_line;
-		size_t str_siz = LINE_MAX * sizeof(char);
+		int str_siz = LINE_MAX * sizeof(char);
 		strace_line = malloc(str_siz);
 		struct list *root = NULL;
 		uint8_t temp_access_fl = 0x0;
@@ -550,6 +664,7 @@ int main(int argc,
 {
 	int enforce_f = 0;
 	int trace_f = 0;
+	int contract_f = 0;
 	int c;
 	int optidx = 0;
 	struct option pl_args[] = {
@@ -564,6 +679,12 @@ int main(int argc,
 					no_argument,
 					&trace_f,
 					1,
+			},
+			{
+				"contract",
+				no_argument,
+				&contract_f,
+				1,
 			},
 			{NULL, 0, NULL, 0},
 	};
@@ -613,6 +734,9 @@ int main(int argc,
 		// if we delete
 		//remove("minienforcer.so");
 
+	} else if(contract_f){
+		fprintf(stderr, "[Creating contract from existing strace log...]\n");
+		create_contract_existing_input(argc, argv, cmd_idx);
 	} else {
 		fprintf(stderr, "ERROR: No action provided for PLEDGE...\n");
 		pledge_help();
