@@ -352,7 +352,7 @@ void create_contract_existing_input(int argc,
 		exit(EXIT_FAILURE);
 	}
 
-	int str_siz = 0;
+	size_t str_siz = 0;
 	char *strace_line = NULL;
 	size_t temp_access_fl = 0x0;
 	struct path_bundle *paths = malloc(sizeof(struct path_bundle));
@@ -565,7 +565,7 @@ void tracer(int argc,
 			exit(EXIT_FAILURE);
 		}
 		char *strace_line;
-		int str_siz = LINE_MAX * sizeof(char);
+		size_t str_siz = LINE_MAX * sizeof(char);
 		strace_line = malloc(str_siz);
 		struct list *root = NULL;
 		uint8_t temp_access_fl = 0x0;
