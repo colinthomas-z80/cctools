@@ -81,11 +81,16 @@ def parse_strace_output(strace_lines):
     fd_file_re = re.compile(r'fd (\d+) is ([^ ]+)')
     lseek_re = re.compile(r'lseek\((\d+), (\d+), ([^)]*)\) *= *(\d+)')
     
-    newfstatat_re = re.compile(r'newfstatat\((?:AT_FDCWD<([^>]+)>|[^,]+), "([^"]+)", ([^,]+), ([^)]+)\) *= *(-?\d+)(?:\s+ENOENT)?')
+    #newfstatat_re = re.compile(r'newfstatat\((?:AT_FDCWD<([^>]+)>|[^,]+), "([^"]+)", ([^,]+), ([^)]+)\) *= *(-?\d+)(?:\s+ENOENT)?')
 
     newfstatat_wsize_re = re.compile(
-        r'newfstatat\((?:\d+<([^>]+)>|AT_FDCWD<([^>]+)>), [^,]+, \{[^}]*st_size=(\d+)[^}]*\}[^)]*\)'
+        r'newfstatat\(.?<(.*)>,.?\".*",.?{.*.|(?:st_size=(.*)),.*}.?,.*\) ='
+
     )
+
+    #    newfstatat_wsize_re = re.compile(
+    #     r'newfstatat\((?:\d+<([^>]+)>|AT_FDCWD<([^>]+)>), [^,]+, \{[^}]*st_size=(\d+)[^}]*\}[^)]*\)'
+    # )
 
     for line in strace_lines:
         m = open_re.search(line)
@@ -103,6 +108,9 @@ def parse_strace_output(strace_lines):
             elif 'O_RDWR' in flags:
                 file_tree[filename].add_access('read')
                 file_tree[filename].add_access('write')
+
+            if 'O_CREAT' in flags:
+                file_tree[filename].add_access('create')
                     
             continue
 
@@ -172,12 +180,12 @@ def parse_strace_output(strace_lines):
         if m:
             print("newfstatat_size")
        
-            if len(m.groups()) != 3:
+            if len(m.groups()) != 2:
                 print("Warning: unexpected newfstatat match groups:", m.groups())
                 continue
 
             # depending on the strace version the first or second group may be None
-            filename, x, st_size = m.groups() if m.groups()[0] is not None else (m.groups()[1], None, m.groups()[2])
+            filename, st_size = m.groups() if m.groups()[0] is not None else (m.groups()[1], None, m.groups()[2])
             
             if filename not in file_tree:
                 file_tree[filename] = FileAccessNode(filename)
@@ -186,14 +194,14 @@ def parse_strace_output(strace_lines):
                 file_tree[filename].st_size = int(st_size)
             continue
 
-        m = newfstatat_re.search(line)
-        if m:
-            print("newfstatat")
-            filename = m.groups()[0]
-            if filename not in file_tree:
-                file_tree[filename] = FileAccessNode(filename)
-            file_tree[filename].add_access('stat')
-            continue
+        # m = newfstatat_re.search(line)
+        # if m:
+        #     print("newfstatat")
+        #     filename = m.groups()[0]
+        #     if filename not in file_tree:
+        #         file_tree[filename] = FileAccessNode(filename)
+        #     file_tree[filename].add_access('stat')
+        #     continue
 
 
     return file_tree
@@ -203,17 +211,19 @@ access_legend = {
     'write': 'W',
     'mmap': 'M',
     'getdents64': 'D',
-    'stat': 'S',
+    'stat': 'M',
+    'create': 'C',
 }
 
 def print_file_contract(file_tree):
     for filename, node in file_tree.items():
         modes = ','.join(sorted(node.modes))
         patterns = ', '.join(node.access_pattern())
-        print(f"{modes}\t{filename}\t{patterns}")
+        print(f"{modes} {filename}\t{patterns}")
 
 def print_file_tree(file_tree):
     # Build a directory tree: {dirpath: {filename: node}}
+    print("Access       <Directory>    Count")
     dir_tree = defaultdict(dict)
     for filename, node in file_tree.items():
         dirpath = os.path.dirname(filename)
@@ -241,7 +251,7 @@ def print_file_tree(file_tree):
                     mode_counts[mode] += 1
         if total_files > 0:
             mode_summary = ', '.join(f"{mode}: {count}" for mode, count in sorted(mode_counts.items()))
-            print(f"{''.join(access_legend[mode] for mode in mode_counts.keys())}\t/{root} ({total_files} files) [{mode_summary}]")
+            print(f"{''.join(access_legend[mode] for mode in mode_counts.keys())} </{root}> ({total_files} files) [{mode_summary}]")
 
     # Then handle mid_list paths
     for mid in mid_list:
@@ -255,7 +265,7 @@ def print_file_tree(file_tree):
                     for mode in node.modes:
                         mode_counts[mode] += 1
             mode_summary = ', '.join(f"{mode}: {count}" for mode, count in sorted(mode_counts.items()))
-            print(f"{''.join(access_legend[mode] for mode in mode_counts.keys())}\t/{mid} ({total_files} files) [{mode_summary}]")
+            print(f"{''.join(access_legend[mode] for mode in mode_counts.keys())} </{mid}> ({total_files} files) [{mode_summary}]")
             
             # Remove printed paths from tree
             for dirpath in mid_paths.keys():
@@ -273,14 +283,14 @@ def print_file_tree(file_tree):
             if not dirpath:
                 dirpath = '/'
             mode_summary = ', '.join(f"{mode}: {count}" for mode, count in sorted(mode_counts.items()))
-            print(f"{''.join(access_legend[mode] for mode in mode_counts.keys())}\t{dirpath} ({len(files)} files) [{mode_summary}]")
+            print(f"{''.join(access_legend[mode] for mode in mode_counts.keys())} <{dirpath}> ({len(files)} files) [{mode_summary}]")
             
 
 
 def main():
 
     parser = argparse.ArgumentParser(description='Trace file access patterns using strace or parse a strace output file.')
-    parser.add_argument('target', nargs='?', help='<pid|command> or path to strace output file')
+    parser.add_argument('target', nargs='?', help='Path to executable')
     parser.add_argument('--file', '-f', dest='strace_file', help='Parse strace output from file instead of running strace')
     parser.add_argument('--tree', '-t', dest='print_tree', help='Print the trace output in a reduced tree format', action='store_true')
     args = parser.parse_args()
@@ -301,7 +311,7 @@ def main():
         proc = run_strace(args.target)
         try:
             file_tree = parse_strace_output(proc.stderr)
-            output_file = ''.join(args.target.split('.')[0], '.contract')
+            output_file = str(args.target) + '.contract'
             with open(output_file, 'w') as f:
                 sys.stdout = f
                 print_file_tree(file_tree)

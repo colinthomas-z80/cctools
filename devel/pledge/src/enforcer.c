@@ -105,7 +105,7 @@ void smart_delim_close(char *buff, char delim)
 }
 
 /// These paths, and everything under them will be whitelisted
-const char *WHITELIST[] = {"/dev/pts", "/dev/null", "/dev/tty", "/proc/self", "/proc", "pipe", NULL};
+const char *WHITELIST[] = {"/dev", "/proc", "pipe", NULL};
 
 // TODO: Error handling
 
@@ -258,6 +258,8 @@ deinit_enforce()
 bool enforce(const char *pathname,
 		const uint8_t keys)
 {
+
+	fprintf(stderr, "Pathname : %s\n", pathname);
 	// WHITELIST check
 	for (size_t i = 0; WHITELIST[i] != NULL; i++) {
 		// The whitelist is for the subdirectories
@@ -528,6 +530,7 @@ fopen(const char *restrict pathname,
 		// Couldn't convert so we fallback to pathname
 		strncpy(full_path, pathname, MAXPATHLEN);
 	}
+	fprintf(stderr, "With absolute [%s]\n", full_path);
 	if (enforce(full_path, perm_val) != true) {
 		return NULL;
 	}
