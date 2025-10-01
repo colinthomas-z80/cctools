@@ -256,13 +256,17 @@ def print_file_tree(file_tree):
     for root in sorted(root_groups.keys()):
         total_files = 0
         mode_counts = defaultdict(int)
+        access_patterns = defaultdict(int)
         for dirpath, files in root_groups[root].items():
             total_files += len(files)
             for fname, node in files.items():
                 for mode in node.modes:
                     mode_counts[mode] += 1
+            for fname, node in files.items():
+                for access_pattern in node.access_pattern():
+                    access_patterns[access_pattern] += 1
         if total_files > 0:
-            mode_summary = ', '.join(f"{mode}: {count}" for mode, count in sorted(mode_counts.items()))
+            mode_summary = ', '.join(f"{mode}: {count}" for mode, count in sorted(mode_counts.items())) + ', ' + ', '.join(f"{pattern}: {count}" for pattern, count in sorted(access_patterns.items()))
             print(f"{''.join(access_legend[mode] for mode in mode_counts.keys())} </{root}> ({total_files} files) [{mode_summary}]")
 
     # Then handle mid_list paths
@@ -276,7 +280,7 @@ def print_file_tree(file_tree):
                 for fname, node in files.items():
                     for mode in node.modes:
                         mode_counts[mode] += 1
-            mode_summary = ', '.join(f"{mode}: {count}" for mode, count in sorted(mode_counts.items()))
+            mode_summary = ', '.join(f"{mode}: {count}" for mode, count in sorted(mode_counts.items())) + ', ' + ', '.join(f"{pattern}: {count}" for pattern, count in sorted(access_patterns.items()))
             print(f"{''.join(access_legend[mode] for mode in mode_counts.keys())} </{mid}> ({total_files} files) [{mode_summary}]")
             
             # Remove printed paths from tree
@@ -294,7 +298,7 @@ def print_file_tree(file_tree):
                     mode_counts[mode] += 1
             if not dirpath:
                 dirpath = '/'
-            mode_summary = ', '.join(f"{mode}: {count}" for mode, count in sorted(mode_counts.items()))
+            mode_summary = ', '.join(f"{mode}: {count}" for mode, count in sorted(mode_counts.items())) + ', ' + ', '.join(f"{pattern}: {count}" for pattern, count in sorted(access_patterns.items()))
             print(f"{''.join(access_legend[mode] for mode in mode_counts.keys())} <{dirpath}> ({len(files)} files) [{mode_summary}]")
             
 
