@@ -83,10 +83,17 @@ def parse_strace_output(strace_lines):
     
     #newfstatat_re = re.compile(r'newfstatat\((?:AT_FDCWD<([^>]+)>|[^,]+), "([^"]+)", ([^,]+), ([^)]+)\) *= *(-?\d+)(?:\s+ENOENT)?')
 
+    # newfstatat_wsize_re = re.compile(
+    #     r'newfstatat\(.?<(.*)>,.?\"(.*)",.?(?:{.*.|(?:st_size=(.*)),.*}).?,.*\) ='
+
+    # )
+
     newfstatat_wsize_re = re.compile(
-        r'newfstatat\(.?<(.*)>,.?\".*",.?{.*.|(?:st_size=(.*)),.*}.?,.*\) ='
+        r'newfstatat\((?:AT_FDCWD|.?)<(.*)>,.?\"(.*)\".*|(?:st_size=(.*),.*)='
 
     )
+
+    
 
     #    newfstatat_wsize_re = re.compile(
     #     r'newfstatat\((?:\d+<([^>]+)>|AT_FDCWD<([^>]+)>), [^,]+, \{[^}]*st_size=(\d+)[^}]*\}[^)]*\)'
@@ -180,13 +187,18 @@ def parse_strace_output(strace_lines):
         if m:
             print("newfstatat_size")
        
-            if len(m.groups()) != 2:
+            if len(m.groups()) != 3:
                 print("Warning: unexpected newfstatat match groups:", m.groups())
                 continue
 
             # depending on the strace version the first or second group may be None
-            filename, st_size = m.groups() if m.groups()[0] is not None else (m.groups()[1], None, m.groups()[2])
-            
+            at_fdcwd, filename, st_size = m.groups() #if m.groups()[0] is not None else (m.groups()[1], None, m.groups()[2])
+            print(filename)
+
+            #AT_EMPTY_PATH
+            if filename is None:
+                continue
+
             if filename not in file_tree:
                 file_tree[filename] = FileAccessNode(filename)
             file_tree[filename].add_access('stat')
