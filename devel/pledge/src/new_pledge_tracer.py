@@ -3,6 +3,7 @@ import sys
 import re
 from collections import defaultdict
 import argparse
+import os
 
 class FileAccessNode:
     def __init__(self, filename):
@@ -67,7 +68,7 @@ def parse_strace_output(strace_lines):
     file_tree = defaultdict(FileAccessNode)
     fd_to_file = {}
     fd_offsets = defaultdict(int)
-    # Matches open/openat with multiple access modes, e.g.:
+
     # openat(AT_FDCWD</path>, "file.txt", O_WRONLY|O_CREAT|O_APPEND, 0666) = 3</path/file.txt>
     open_re = re.compile(
         r'open(?:at)?\([^,]*, "?([^"]+)"?, ([^,)]+)(?:, [^)]*)?\).*?= (\d+)<([^>]+)>'
@@ -80,13 +81,16 @@ def parse_strace_output(strace_lines):
     fd_file_re = re.compile(r'fd (\d+) is ([^ ]+)')
     lseek_re = re.compile(r'lseek\((\d+), (\d+), ([^)]*)\) *= *(\d+)')
     
-    newfstatat_re = re.compile(r'newfstatat\(\d+<([^>]+)>,')
+    newfstatat_re = re.compile(r'newfstatat\((?:AT_FDCWD<([^>]+)>|[^,]+), "([^"]+)", ([^,]+), ([^)]+)\) *= *(-?\d+)(?:\s+ENOENT)?')
+
     newfstatat_wsize_re = re.compile(
-        r'newfstatat\(\d+<([^>]+)>, ".*?", \{[^}]*st_size=(\d+)[^,}]*,'
+        r'newfstatat\((?:\d+<([^>]+)>|AT_FDCWD<([^>]+)>), [^,]+, \{[^}]*st_size=(\d+)[^}]*\}[^)]*\)'
     )
+
     for line in strace_lines:
         m = open_re.search(line)
         if m:
+            #print("openat")
             requested, flags, fd, filename = m.groups()
             fd_to_file[fd] = filename
             if filename not in file_tree:
@@ -104,6 +108,7 @@ def parse_strace_output(strace_lines):
 
         m = fd_file_re.search(line)
         if m:
+            print("fdinfo")
             fd, filename = m.groups()
             fd_to_file[fd] = filename
             if filename not in file_tree:
@@ -112,36 +117,51 @@ def parse_strace_output(strace_lines):
 
         m = lseek_re.search(line)
         if m:
+            print("lseek")
             fd, offset, _, result = m.groups()
             fd_offsets[fd] = int(result)
             continue
 
         m = read_re.search(line)
         if m:
+            #print("read")
             fd, filename, requested, length = m.groups()
             offset = fd_offsets.get(fd, 0)
-            file_tree[filename].add_access('read', offset, int(length))
-            file_tree[filename].total_bytes_read += int(length)
-            fd_offsets[fd] = offset + int(length)
+            try:
+                file_tree[filename].add_access('read', offset, int(length))
+                file_tree[filename].total_bytes_read += int(length)
+                fd_offsets[fd] = offset + int(length)
+            except:
+                print(f"Warning: read from unknown file descriptor {fd} ({filename})")
+                file_tree[filename] = FileAccessNode(filename)
+                file_tree[filename].add_access('read', offset, int(length))
+                file_tree[filename].total_bytes_read += int(length)
+                fd_offsets[fd] = offset + int(length)
             continue
 
         m = write_re.search(line)
         if m:
+            print("write")
             fd, filename, requested, length = m.groups()
             offset = fd_offsets.get(fd, 0)
-            print(filename)
-            file_tree[filename].add_access('write', offset, int(length))
-            fd_offsets[fd] = offset + int(length)
+            try:
+                file_tree[filename].add_access('write', offset, int(length))
+            except:
+                print(f"Warning: write to unknown file descriptor {fd} ({filename})")
+                file_tree[filename] = FileAccessNode(filename)
+                file_tree[filename].add_access('write', offset, int(length))
             continue
 
         m = mmap_re.search(line)
         if m:
+            print("mmap")
             _, length, _, fd, offset, filename = m.groups()
             file_tree[filename].add_access('mmap', int(offset), int(length))
             continue
 
         m = getdents_re.search(line)
         if m:
+            print("getdents64")
             fd = m.group(1)
             filename = fd_to_file.get(fd)
             if filename:
@@ -150,7 +170,15 @@ def parse_strace_output(strace_lines):
 
         m = newfstatat_wsize_re.search(line)
         if m:
-            filename, st_size  = m.groups()
+            print("newfstatat_size")
+       
+            if len(m.groups()) != 3:
+                print("Warning: unexpected newfstatat match groups:", m.groups())
+                continue
+
+            # depending on the strace version the first or second group may be None
+            filename, x, st_size = m.groups() if m.groups()[0] is not None else (m.groups()[1], None, m.groups()[2])
+            
             if filename not in file_tree:
                 file_tree[filename] = FileAccessNode(filename)
             file_tree[filename].add_access('stat')
@@ -160,7 +188,7 @@ def parse_strace_output(strace_lines):
 
         m = newfstatat_re.search(line)
         if m:
-            print("stat caught")
+            print("newfstatat")
             filename = m.groups()[0]
             if filename not in file_tree:
                 file_tree[filename] = FileAccessNode(filename)
@@ -170,33 +198,114 @@ def parse_strace_output(strace_lines):
 
     return file_tree
 
-def print_file_tree(file_tree):
+access_legend = {
+    'read': 'R',
+    'write': 'W',
+    'mmap': 'M',
+    'getdents64': 'D',
+    'stat': 'S',
+}
+
+def print_file_contract(file_tree):
     for filename, node in file_tree.items():
-        print(f'File: {filename}')
-        print(f'  Modes: {", ".join(node.modes)}')
-        print(f'  Access Patterns: {", ".join(node.access_pattern())}')
-        print(f'  Bytes Read: {node.total_bytes_read}')
-        print(f'  Read Offsets: {node.read_offsets}')
-        print(f'  Write Offsets: {node.write_offsets}')
-        print()
+        modes = ','.join(sorted(node.modes))
+        patterns = ', '.join(node.access_pattern())
+        print(f"{modes}\t{filename}\t{patterns}")
+
+def print_file_tree(file_tree):
+    # Build a directory tree: {dirpath: {filename: node}}
+    dir_tree = defaultdict(dict)
+    for filename, node in file_tree.items():
+        dirpath = os.path.dirname(filename)
+        dir_tree[dirpath][filename] = node
+
+    base_list = ['dev', 'proc', 'sys', 'run', 'usr', 'etc']
+
+    mid_list = ['miniconda3']
+
+    # Group paths by their root directory
+    root_groups = defaultdict(lambda: defaultdict(dict))
+    for dirpath, files in dir_tree.items():
+        root = dirpath.split('/')[1] if dirpath.startswith('/') else dirpath.split('/')[0]
+        if root in base_list:
+            root_groups[root][dirpath] = files
+
+    # First handle base_list paths
+    for root in sorted(root_groups.keys()):
+        total_files = 0
+        mode_counts = defaultdict(int)
+        for dirpath, files in root_groups[root].items():
+            total_files += len(files)
+            for fname, node in files.items():
+                for mode in node.modes:
+                    mode_counts[mode] += 1
+        if total_files > 0:
+            mode_summary = ', '.join(f"{mode}: {count}" for mode, count in sorted(mode_counts.items()))
+            print(f"{''.join(access_legend[mode] for mode in mode_counts.keys())}\t/{root} ({total_files} files) [{mode_summary}]")
+
+    # Then handle mid_list paths
+    for mid in mid_list:
+        mid_paths = {dirpath: files for dirpath, files in dir_tree.items() if f'/{mid}' in dirpath}
+        if mid_paths:
+            total_files = 0
+            mode_counts = defaultdict(int)
+            for dirpath, files in mid_paths.items():
+                total_files += len(files)
+                for fname, node in files.items():
+                    for mode in node.modes:
+                        mode_counts[mode] += 1
+            mode_summary = ', '.join(f"{mode}: {count}" for mode, count in sorted(mode_counts.items()))
+            print(f"{''.join(access_legend[mode] for mode in mode_counts.keys())}\t/{mid} ({total_files} files) [{mode_summary}]")
+            
+            # Remove printed paths from tree
+            for dirpath in mid_paths.keys():
+                dir_tree.pop(dirpath)
+
+    # Handle remaining paths
+    for dirpath in sorted(dir_tree.keys()):
+        root = dirpath.split('/')[1] if dirpath.startswith('/') else dirpath.split('/')[0]
+        if root not in base_list:
+            files = dir_tree[dirpath]
+            mode_counts = defaultdict(int)
+            for fname, node in files.items():
+                for mode in node.modes:
+                    mode_counts[mode] += 1
+            if not dirpath:
+                dirpath = '/'
+            mode_summary = ', '.join(f"{mode}: {count}" for mode, count in sorted(mode_counts.items()))
+            print(f"{''.join(access_legend[mode] for mode in mode_counts.keys())}\t{dirpath} ({len(files)} files) [{mode_summary}]")
+            
+
 
 def main():
 
     parser = argparse.ArgumentParser(description='Trace file access patterns using strace or parse a strace output file.')
     parser.add_argument('target', nargs='?', help='<pid|command> or path to strace output file')
     parser.add_argument('--file', '-f', dest='strace_file', help='Parse strace output from file instead of running strace')
+    parser.add_argument('--tree', '-t', dest='print_tree', help='Print the trace output in a reduced tree format', action='store_true')
     args = parser.parse_args()
 
     if args.strace_file:
         with open(args.strace_file, 'r') as f:
             strace_lines = f.readlines()
         file_tree = parse_strace_output(strace_lines)
-        print_file_tree(file_tree)
+        if args.print_tree:
+            output_file = args.strace_file + '.contract'
+            with open(output_file, 'w') as f:
+                sys.stdout = f
+                print_file_tree(file_tree)
+                sys.stdout = sys.__stdout__
+        else:
+            print_file_contract(file_tree)
     elif args.target:
         proc = run_strace(args.target)
         try:
             file_tree = parse_strace_output(proc.stderr)
-            print_file_tree(file_tree)
+            output_file = ''.join(args.target.split('.')[0], '.contract')
+            with open(output_file, 'w') as f:
+                sys.stdout = f
+                print_file_tree(file_tree)
+                sys.stdout = sys.__stdout__
         except KeyboardInterrupt:
             proc.terminate()
     else:
