@@ -5,6 +5,17 @@ from collections import defaultdict
 import argparse
 import os
 
+access_legend = {
+    'read': 'R',
+    'write': 'W',
+    'mmap': 'M',
+    'getdents64': 'D',
+    'stat': 'M',
+    'create': 'C',
+}
+
+cwd = None
+
 class FileAccessNode:
     def __init__(self, filename):
         self.filename = filename
@@ -15,6 +26,12 @@ class FileAccessNode:
         self.getdents = False
         self.total_bytes_read = 0 
         self.st_size = 0
+        self.num_reads = 0
+        self.num_writes = 0
+        self.num_stats = 0
+        self.num_mmaps = 0
+        self.num_getdents = 0
+        self.num_creates = 0
 
 
     def add_access(self, mode, offset=None, length=None):
@@ -23,12 +40,16 @@ class FileAccessNode:
             self.read_offsets.append((offset, length))
             if length is not None:
                 self.total_bytes_read += length  
+            self.num_reads += 1
         elif mode == 'write' and offset is not None:
             self.write_offsets.append((offset, length))
+            self.num_writes += 1
         elif mode == 'mmap' and offset is not None:
             self.mmap_access.append((offset, length))
         elif mode == 'getdents64':
             self.getdents = True
+        elif mode == 'stat':
+            self.num_stats += 1
 
     def access_pattern(self):
         patterns = []
@@ -88,11 +109,19 @@ def parse_strace_output(strace_lines):
 
     # )
 
+    # newfstatat_wsize_re = re.compile(
+    #     r'newfstatat\((?:AT_FDCWD|.?)<(.*)>,.?\"(.*)\".*|(?:st_size=(.*),.*)='
+
+    # )
     newfstatat_wsize_re = re.compile(
-        r'newfstatat\((?:AT_FDCWD|.?)<(.*)>,.?\"(.*)\".*|(?:st_size=(.*),.*)='
+        r'newfstatat\((?:AT_FDCWD|.?)<(.*)>,.?\"(.*)\"(?:(?:.*)|(?:st_size=(.*)),.*)='
 
     )
 
+    stat_or_lstat = re.compile(
+        r'l?stat\(\"(.*)\"(?:(?:.*)|(?:st_size=(.*)),.*)='
+
+    )
     
 
     #    newfstatat_wsize_re = re.compile(
@@ -102,7 +131,8 @@ def parse_strace_output(strace_lines):
     for line in strace_lines:
         m = open_re.search(line)
         if m:
-            #print("openat")
+            print("openat") 
+            print(line)
             requested, flags, fd, filename = m.groups()
             fd_to_file[fd] = filename
             if filename not in file_tree:
@@ -115,9 +145,15 @@ def parse_strace_output(strace_lines):
             elif 'O_RDWR' in flags:
                 file_tree[filename].add_access('read')
                 file_tree[filename].add_access('write')
-
             if 'O_CREAT' in flags:
                 file_tree[filename].add_access('create')
+
+            if 'AT_FDCWD' in line:
+                global cwd
+                cwd_re = re.search(r'AT_FDCWD<([^>]+)>', line)
+                if cwd_re:
+                    global cwd
+                    cwd = cwd_re.group(1)
                     
             continue
 
@@ -186,14 +222,15 @@ def parse_strace_output(strace_lines):
         m = newfstatat_wsize_re.search(line)
         if m:
             print("newfstatat_size")
-       
+            #print(line)
             if len(m.groups()) != 3:
                 print("Warning: unexpected newfstatat match groups:", m.groups())
                 continue
 
             # depending on the strace version the first or second group may be None
-            at_fdcwd, filename, st_size = m.groups() #if m.groups()[0] is not None else (m.groups()[1], None, m.groups()[2])
-            print(filename)
+            at_fdcwd, filename, st_size = m.groups() if m.groups()[0] is not None else (m.groups()[1], None, m.groups()[2])
+            #print(filename)
+            #print(line)
 
             #AT_EMPTY_PATH
             if filename is None:
@@ -206,27 +243,32 @@ def parse_strace_output(strace_lines):
                 file_tree[filename].st_size = int(st_size)
             continue
 
-        # m = newfstatat_re.search(line)
-        # if m:
-        #     print("newfstatat")
-        #     filename = m.groups()[0]
-        #     if filename not in file_tree:
-        #         file_tree[filename] = FileAccessNode(filename)
-        #     file_tree[filename].add_access('stat')
-        #     continue
+        m = stat_or_lstat.search(line)
+        if m:
+            print("stat or lstat")
+            #print(line)
+       
+            if len(m.groups()) != 2:
+                print("Warning: unexpected stat or lstat match groups:", m.groups())
+                continue
 
+            # depending on the strace version the first or second group may be None
+            filename, st_size = m.groups() 
+            #print(filename)
+            #print(line)
+
+            #AT_EMPTY_PATH
+            if filename is None:
+                continue
+
+            if filename not in file_tree:
+                file_tree[filename] = FileAccessNode(filename)
+            file_tree[filename].add_access('stat')
+            if st_size is not None:
+                file_tree[filename].st_size = int(st_size)
+            continue
 
     return file_tree
-
-access_legend = {
-    'read': 'R',
-    'write': 'W',
-    'mmap': 'M',
-    'getdents64': 'D',
-    'stat': 'M',
-    'create': 'C',
-}
-
 def print_file_contract(file_tree):
     for filename, node in file_tree.items():
         modes = ','.join(sorted(node.modes))
@@ -257,17 +299,23 @@ def print_file_tree(file_tree):
         total_files = 0
         mode_counts = defaultdict(int)
         access_patterns = defaultdict(int)
+        stat_count = 0
+        read_count = 0
+        write_count = 0
         for dirpath, files in root_groups[root].items():
             total_files += len(files)
             for fname, node in files.items():
-                for mode in node.modes:
-                    mode_counts[mode] += 1
-            for fname, node in files.items():
+                mode_counts['read'] += node.num_reads
+                mode_counts['write'] += node.num_writes
+                mode_counts['stat'] += node.num_stats
+                mode_counts['mmap'] += node.num_mmaps
+                mode_counts['getdents64'] += node.num_getdents
+                mode_counts['create'] += node.num_creates
                 for access_pattern in node.access_pattern():
                     access_patterns[access_pattern] += 1
         if total_files > 0:
-            mode_summary = ', '.join(f"{mode}: {count}" for mode, count in sorted(mode_counts.items())) + ', ' + ', '.join(f"{pattern}: {count}" for pattern, count in sorted(access_patterns.items()))
-            print(f"{''.join(access_legend[mode] for mode in mode_counts.keys())} </{root}> ({total_files} files) [{mode_summary}]")
+            mode_summary = ', '.join(f"{mode}: {count}" for mode, count in sorted(mode_counts.items()) if count > 0) #+ ', ' + ', '.join(f"{pattern}: {count}" for pattern, count in sorted(access_patterns.items()))
+            print(f"{''.join(access_legend[mode] for mode, count in mode_counts.items() if count > 0)} </{root}> ({total_files} files) [{mode_summary}]")
 
     # Then handle mid_list paths
     for mid in mid_list:
@@ -275,32 +323,100 @@ def print_file_tree(file_tree):
         if mid_paths:
             total_files = 0
             mode_counts = defaultdict(int)
+            access_patterns = defaultdict(int)
+            stat_count = 0
+            read_count = 0
+            write_count = 0
+            mid_abs = f'/{mid}'
             for dirpath, files in mid_paths.items():
                 total_files += len(files)
+                mid_abs = dirpath.split(f'/{mid}')[0] + f'/{mid}'
                 for fname, node in files.items():
                     for mode in node.modes:
                         mode_counts[mode] += 1
-            mode_summary = ', '.join(f"{mode}: {count}" for mode, count in sorted(mode_counts.items())) + ', ' + ', '.join(f"{pattern}: {count}" for pattern, count in sorted(access_patterns.items()))
-            print(f"{''.join(access_legend[mode] for mode in mode_counts.keys())} </{mid}> ({total_files} files) [{mode_summary}]")
+                    mode_counts['read'] += node.num_reads
+                    mode_counts['write'] += node.num_writes
+                    mode_counts['stat'] += node.num_stats
+                    mode_counts['mmap'] += node.num_mmaps
+                    mode_counts['getdents64'] += node.num_getdents
+                    mode_counts['create'] += node.num_creates
+                    for access_pattern in node.access_pattern():
+                        access_patterns[access_pattern] += 1
+            mode_summary = ', '.join(f"{mode}: {count}" for mode, count in sorted(mode_counts.items()) if count > 0) #+ ', ' + ', '.join(f"{pattern}: {count}" for pattern, count in sorted(access_patterns.items()))
+            print(f"{''.join(access_legend[mode] for mode, count in mode_counts.items() if count > 0)} <{mid_abs}> ({total_files} files) [{mode_summary}]")
             
             # Remove printed paths from tree
             for dirpath in mid_paths.keys():
                 dir_tree.pop(dirpath)
 
     # Handle remaining paths
+    # if a directory is a local reference, find the absolute path in the tree and combine them
+    local_refs = {dirpath: files for dirpath, files in dir_tree.items() if not dirpath.startswith('/')}
+    for dirpath, files in local_refs.items():
+        # try to find absolute path using cwd from openat calls
+        abs_path = os.path.abspath(os.path.join(cwd if cwd else '/', dirpath))
+        if abs_path in dir_tree:
+            parent_files = dir_tree[abs_path]
+            for fname, node in files.items():
+                if fname not in parent_files:
+                    parent_files[fname] = node
+                else:
+                    # merge access modes and counts
+                    parent_node = parent_files[fname]
+                    parent_node.modes.update(node.modes)
+                    parent_node.read_offsets.extend(node.read_offsets)
+                    parent_node.write_offsets.extend(node.write_offsets)
+                    parent_node.mmap_access.extend(node.mmap_access)
+                    parent_node.getdents = parent_node.getdents or node.getdents
+                    parent_node.total_bytes_read += node.total_bytes_read
+                    parent_node.num_reads += node.num_reads
+                    parent_node.num_writes += node.num_writes
+                    parent_node.num_stats += node.num_stats
+                    parent_node.num_mmaps += node.num_mmaps
+                    parent_node.num_getdents += node.num_getdents
+                    parent_node.num_creates += node.num_creates
+            # Remove local ref from tree
+            dir_tree.pop(dirpath)
+
+    # Group remaining paths by root and modes
+    root_mode_groups = defaultdict(lambda: defaultdict(list))
     for dirpath in sorted(dir_tree.keys()):
         root = dirpath.split('/')[1] if dirpath.startswith('/') else dirpath.split('/')[0]
         if root not in base_list:
             files = dir_tree[dirpath]
             mode_counts = defaultdict(int)
             for fname, node in files.items():
-                for mode in node.modes:
-                    mode_counts[mode] += 1
-            if not dirpath:
-                dirpath = '/'
-            mode_summary = ', '.join(f"{mode}: {count}" for mode, count in sorted(mode_counts.items())) + ', ' + ', '.join(f"{pattern}: {count}" for pattern, count in sorted(access_patterns.items()))
-            print(f"{''.join(access_legend[mode] for mode in mode_counts.keys())} <{dirpath}> ({len(files)} files) [{mode_summary}]")
+                mode_counts['read'] += node.num_reads
+                mode_counts['write'] += node.num_writes
+                mode_counts['stat'] += node.num_stats
+                mode_counts['mmap'] += node.num_mmaps
+                mode_counts['getdents64'] += node.num_getdents
+                mode_counts['create'] += node.num_creates
             
+            # Create mode signature for grouping
+            mode_sig = ''.join(sorted(mode for mode in mode_counts.keys() if mode_counts[mode] > 0))
+            root_mode_groups[root][mode_sig].append((dirpath, files, mode_counts))
+
+    # Print grouped directories
+    for root in sorted(root_mode_groups.keys()):
+        for mode_sig, dir_groups in root_mode_groups[root].items():
+            total_files = 0
+            combined_mode_counts = defaultdict(int)
+            combined_dirs = []
+
+            for dirpath, files, mode_counts in dir_groups:
+                total_files += len(files)
+                for mode, count in mode_counts.items():
+                    combined_mode_counts[mode] += count
+                if dirpath:
+                    combined_dirs.append(dirpath)
+                else:
+                    combined_dirs.append('/')
+
+            mode_summary = ', '.join(f"{mode}: {count}" for mode, count in sorted(combined_mode_counts.items()) if count > 0)
+            dir_summary = f"<{root}/>" if len(combined_dirs) > 1 else f"<{combined_dirs[0]}>"
+            print(f"{''.join(access_legend[mode] for mode, count in combined_mode_counts.items() if count > 0)} {dir_summary} ({total_files} files) [{mode_summary}]")
+
 
 
 def main():
