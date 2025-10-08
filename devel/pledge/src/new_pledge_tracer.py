@@ -8,7 +8,7 @@ import os
 access_legend = {
     'read': 'R',
     'write': 'W',
-    'mmap': 'M',
+    'mmap': 'P',
     'getdents64': 'D',
     'stat': 'M',
     'create': 'C',
@@ -27,6 +27,7 @@ class FileAccessNode:
         self.getdents = False
         self.total_bytes_read = 0 
         self.st_size = 0
+        self.num_opens = 0
         self.num_reads = 0
         self.num_writes = 0
         self.num_stats = 0
@@ -38,8 +39,9 @@ class FileAccessNode:
 
     def add_access(self, mode, offset=None, length=None):
         self.modes.add(mode)
-        if mode == 'read' and offset is not None:
-            self.read_offsets.append((offset, length))
+        if mode == 'read':
+            if offset is not None:
+                self.read_offsets.append((offset, length))
             if length is not None:
                 self.total_bytes_read += length  
             self.num_reads += 1
@@ -135,8 +137,7 @@ def parse_strace_output(strace_lines):
     for line in strace_lines:
         m = open_re.search(line)
         if m:
-            print("openat") 
-            print(line)
+            print("openat")
             requested, flags, fd, filename = m.groups()
             fd_to_file[fd] = filename
             if filename not in file_tree:
@@ -304,7 +305,7 @@ def print_file_tree(file_tree):
         dirpath = os.path.dirname(filename)
         dir_tree[dirpath][filename] = node
 
-    base_list = ['dev', 'proc', 'sys', 'run', 'usr', 'etc', 'common']
+    base_list = ['dev', 'proc', 'sys', 'run', 'usr', 'etc', 'common', 'var']
 
     mid_list = ['miniconda3']
 
@@ -326,6 +327,7 @@ def print_file_tree(file_tree):
         for dirpath, files in root_groups[root].items():
             total_files += len(files)
             for fname, node in files.items():
+                mode_counts['open']
                 mode_counts['read'] += node.num_reads
                 mode_counts['write'] += node.num_writes
                 mode_counts['stat'] += node.num_stats
@@ -357,6 +359,7 @@ def print_file_tree(file_tree):
                 for fname, node in files.items():
                     for mode in node.modes:
                         mode_counts[mode] += 1
+                    mode_counts['open'] += node.num_opens
                     mode_counts['read'] += node.num_reads
                     mode_counts['write'] += node.num_writes
                     mode_counts['stat'] += node.num_stats
@@ -436,6 +439,7 @@ def print_file_tree(file_tree):
                 if check_path.startswith(current_path):
                     path_files += len(path_files_data)
                     for _, node in path_files_data.items():
+                        if node.num_opens > 0: path_modes['open'] += node.num_opens
                         if node.num_reads > 0: path_modes['read'] += node.num_reads
                         if node.num_writes > 0: path_modes['write'] += node.num_writes
                         if node.num_stats > 0: path_modes['stat'] += node.num_stats
