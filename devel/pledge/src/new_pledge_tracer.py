@@ -9,6 +9,7 @@ access_legend = {
     'read': 'R',
     'write': 'W',
     'mmap': 'P',
+    'mmapsh': 'S',
     'getdents64': 'D',
     'stat': 'M',
     'create': 'C',
@@ -32,6 +33,7 @@ class FileAccessNode:
         self.num_writes = 0
         self.num_stats = 0
         self.num_mmaps = 0
+        self.num_mmapsh = 0
         self.num_getdents = 0
         self.num_creates = 0
         self.num_enoent = 0
@@ -56,6 +58,10 @@ class FileAccessNode:
             self.num_stats += 1
         elif mode == 'enoent':
             self.num_enoent += 1
+        elif mode == 'mmap':
+            self.num_mmaps += 1
+        elif mode == 'mmapsh':
+            self.num_mmapsh += 1
 
     def access_pattern(self):
         patterns = []
@@ -103,7 +109,8 @@ def parse_strace_output(strace_lines):
     read_re = re.compile(r'read\((\d+)<([^>]+)>,.*?, (\d+)\) = (\d+)')
     write_re = re.compile(r'write\((\d+)<([^>]+)>,.*?, (\d+)\) = (\d+)')
     #write_re = re.compile(r'write\((\d+),.*?, (\d+)\).*? <.*>.*? ([^ ]+)$')
-    mmap_re = re.compile(r'mmap\((.*), (\d+), ([^,]+), .*?, (\d+), (\d+)\).*? <.*>.*? ([^ ]+)$')
+    #mmap_re = re.compile(r'mmap\((.*), (\d+), ([^,]+), .*?, (\d+), (\d+)\).*? <.*>.*? ([^ ]+)$')
+    mmap_re = re.compile(r'mmap\((?:.*), (?:.*), (?:.*), (.*), .*<(.*)>, (?:.*)\)')
     getdents_re = re.compile(r'getdents64\((\d+),')
     fd_file_re = re.compile(r'fd (\d+) is ([^ ]+)')
     lseek_re = re.compile(r'lseek\((\d+), (\d+), ([^)]*)\) *= *(\d+)')
@@ -215,8 +222,20 @@ def parse_strace_output(strace_lines):
         m = mmap_re.search(line)
         if m:
             print("mmap")
-            _, length, _, fd, offset, filename = m.groups()
-            file_tree[filename].add_access('mmap', int(offset), int(length))
+            print(m.groups())
+            flags, filename = m.groups()
+            
+            if not filename.startswith('/'):
+                # ignore anonymous mappings
+                continue
+            if filename not in file_tree:
+                file_tree[filename] = FileAccessNode(filename)
+
+            if 'MAP_SHARED' in flags:
+                file_tree[filename].add_access('mmapsh')
+            elif 'MAP_PRIVATE' in flags:
+                file_tree[filename].add_access('mmap')
+
             continue
 
         m = getdents_re.search(line)
@@ -327,7 +346,7 @@ def print_file_tree(file_tree):
         for dirpath, files in root_groups[root].items():
             total_files += len(files)
             for fname, node in files.items():
-                mode_counts['open']
+                #mode_counts['open'] += node.num_opens
                 mode_counts['read'] += node.num_reads
                 mode_counts['write'] += node.num_writes
                 mode_counts['stat'] += node.num_stats
@@ -335,6 +354,7 @@ def print_file_tree(file_tree):
                 mode_counts['getdents64'] += node.num_getdents
                 mode_counts['create'] += node.num_creates
                 mode_counts['enoent'] += node.num_enoent
+                mode_counts['mmapsh'] += node.num_mmapsh
                 for access_pattern in node.access_pattern():
                     access_patterns[access_pattern] += 1
             dir_tree.pop(dirpath)  # Remove printed paths from tree
@@ -359,7 +379,7 @@ def print_file_tree(file_tree):
                 for fname, node in files.items():
                     for mode in node.modes:
                         mode_counts[mode] += 1
-                    mode_counts['open'] += node.num_opens
+                    #mode_counts['open'] += node.num_opens
                     mode_counts['read'] += node.num_reads
                     mode_counts['write'] += node.num_writes
                     mode_counts['stat'] += node.num_stats
@@ -439,7 +459,7 @@ def print_file_tree(file_tree):
                 if check_path.startswith(current_path):
                     path_files += len(path_files_data)
                     for _, node in path_files_data.items():
-                        if node.num_opens > 0: path_modes['open'] += node.num_opens
+                        #if node.num_opens > 0: path_modes['open'] += node.num_opens
                         if node.num_reads > 0: path_modes['read'] += node.num_reads
                         if node.num_writes > 0: path_modes['write'] += node.num_writes
                         if node.num_stats > 0: path_modes['stat'] += node.num_stats
