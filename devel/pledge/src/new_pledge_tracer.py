@@ -13,7 +13,8 @@ access_legend = {
     'getdents64': 'D',
     'stat': 'M',
     'create': 'C',
-    'enoent': 'E'
+    'enoent': 'E',
+    'exec': 'X',
 }
 
 cwd = None
@@ -37,6 +38,7 @@ class FileAccessNode:
         self.num_getdents = 0
         self.num_creates = 0
         self.num_enoent = 0
+        self.num_exec = 0
 
 
     def add_access(self, mode, offset=None, length=None):
@@ -62,6 +64,8 @@ class FileAccessNode:
             self.num_mmaps += 1
         elif mode == 'mmapsh':
             self.num_mmapsh += 1
+        elif mode == 'exec':
+            self.num_exec += 1
 
     def access_pattern(self):
         patterns = []
@@ -114,6 +118,10 @@ def parse_strace_output(strace_lines):
     getdents_re = re.compile(r'getdents64\((\d+),')
     fd_file_re = re.compile(r'fd (\d+) is ([^ ]+)')
     lseek_re = re.compile(r'lseek\((\d+), (\d+), ([^)]*)\) *= *(\d+)')
+
+# [pid 2011208] execve("/users/cthoma26/Montage/bin/mImgtbl", ["mImgtbl", "rawdir", "images-rawdir.tbl"], 0x5599dec1c5a0 /* 78 vars */) = 0
+
+    exec_re = re.compile(r'execve\("([^"]+)", .*= *(?:-?\d+)')
     
     #newfstatat_re = re.compile(r'newfstatat\((?:AT_FDCWD<([^>]+)>|[^,]+), "([^"]+)", ([^,]+), ([^)]+)\) *= *(-?\d+)(?:\s+ENOENT)?')
 
@@ -309,6 +317,15 @@ def parse_strace_output(strace_lines):
                 file_tree[filename].st_size = int(st_size)
             continue
 
+        m = exec_re.search(line)
+        if m:
+            print("execve")
+            filename = m.groups()[0]
+            if filename not in file_tree:
+                file_tree[filename] = FileAccessNode(filename)
+            file_tree[filename].add_access('exec')
+            continue
+
     return file_tree
 def print_file_contract(file_tree):
     for filename, node in file_tree.items():
@@ -355,6 +372,7 @@ def print_file_tree(file_tree):
                 mode_counts['create'] += node.num_creates
                 mode_counts['enoent'] += node.num_enoent
                 mode_counts['mmapsh'] += node.num_mmapsh
+                mode_counts['exec'] += node.num_exec
                 for access_pattern in node.access_pattern():
                     access_patterns[access_pattern] += 1
             dir_tree.pop(dirpath)  # Remove printed paths from tree
@@ -387,6 +405,8 @@ def print_file_tree(file_tree):
                     mode_counts['getdents64'] += node.num_getdents
                     mode_counts['create'] += node.num_creates
                     mode_counts['enoent'] += node.num_enoent
+                    mode_counts['mmapsh'] += node.num_mmapsh
+                    mode_counts['exec'] += node.num_exec
                     for access_pattern in node.access_pattern():
                         access_patterns[access_pattern] += 1
             mode_summary = ', '.join(f"{mode}: {count}" for mode, count in sorted(mode_counts.items()) if count > 0) #+ ', ' + ', '.join(f"{pattern}: {count}" for pattern, count in sorted(access_patterns.items()))
@@ -467,6 +487,7 @@ def print_file_tree(file_tree):
                         if node.num_getdents > 0: path_modes['getdents64'] += node.num_getdents
                         if node.num_creates > 0: path_modes['create'] += node.num_creates
                         if node.num_enoent > 0: path_modes['enoent'] += node.num_enoent
+                        if node.num_exec > 0: path_modes['exec'] += node.num_exec
 
             # If we have ≤2 access modes at this level, use it
             if len([m for m,c in path_modes.items() if c > 0]) <= 2:
