@@ -96,6 +96,8 @@ struct vine_worker_info {
 
 	int incoming_xfer_counter;
 	int outgoing_xfer_counter;
+
+	int cpop_reserved; 
 };
 
 struct vine_worker_info * vine_worker_create( struct link * lnk );

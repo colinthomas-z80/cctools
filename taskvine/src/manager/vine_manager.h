@@ -189,6 +189,11 @@ struct vine_manager {
 	int task_groups_enabled; 
 	int group_id_counter; 
 
+	/* Category Scheduling Experiments */
+	int cpop_categories;
+	struct hash_table *cpop_workers;
+	char *current_cpop;
+
 	/* Various performance knobs that can be tuned. */
 	int short_timeout;            /* Timeout in seconds to send/recv a brief message from worker */
 	int long_timeout;             /* Timeout if in the middle of an incomplete message. */

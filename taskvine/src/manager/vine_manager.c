@@ -1248,6 +1248,16 @@ static void add_worker(struct vine_manager *q)
 	w->hashkey = link_to_hash_key(link);
 	w->addrport = string_format("%s:%d", addr, port);
 
+	// reserve one cpop worker
+	if (q->cpop_categories) {
+		char *cpop_worker_name;
+		struct vine_worker_info *cpop_worker;
+		HASH_TABLE_ITERATE(q->cpop_workers, cpop_worker_name, cpop_worker);
+		if (!cpop_worker) {
+			hash_table_insert(q->cpop_workers, w->hashkey, w);
+		}
+	}
+
 	hash_table_insert(q->worker_table, w->hashkey, w);
 }
 
@@ -4203,6 +4213,10 @@ struct vine_manager *vine_ssl_create(int port, const char *key, const char *cert
 
 	q->task_groups_enabled = 0;
 
+	q->cpop_categories = 0;
+	q->current_cpop = 0;
+	q->cpop_workers = hash_table_create(0, 0);
+
 	q->load_from_shared_fs_enabled = 0;
 
 	q->file_source_max_transfers = VINE_FILE_SOURCE_MAX_TRANSFERS;
@@ -5320,6 +5334,29 @@ static struct vine_task *vine_wait_internal(struct vine_manager *q, int timeout,
 		}
 		END_ACCUM_TIME(q, time_internal);
 
+		// select a critical path
+		if (q->cpop_categories && !q->current_cpop) {
+			char *cat;
+			struct category *cat_info;
+			HASH_TABLE_ITERATE(q->categories, cat, cat_info)
+			{
+				if (!strcmp(cat, "default")) {
+					continue;
+				} else {
+					debug(D_VINE, "setting critical path category to %s", cat);
+					q->current_cpop = cat;
+				}
+			}
+		} else if (q->current_cpop) {
+			// see if we completed all of the tasks in the current critical path.
+			struct category *cat_info = hash_table_lookup(q->categories, q->current_cpop);
+			if (cat_info->total_tasks < 1){
+				debug(D_VINE, "critical path category %s completed", q->current_cpop);
+				q->current_cpop = NULL;
+			}
+		}
+		
+
 		// break loop if there is a task to be returned to the user; or if prefering dispatching, if there
 		// are no tasks to be dispatched; or if we already looped once and no events were triggered.
 		if (list_size(q->retrieved_list) > 0) {
@@ -6006,7 +6043,10 @@ int vine_tune(struct vine_manager *q, const char *name, double value)
 	} else if (!strcmp(name, "shift-disk-load")) {
 		q->shift_disk_load = !!((int)value);
 
-	} else {
+	} else if (!strcmp(name, "cpop-categories")) {
+		q->cpop_categories = !!((int)value);
+	}
+	else {
 		debug(D_NOTICE | D_VINE, "Warning: tuning parameter \"%s\" not recognized\n", name);
 		return -1;
 	}

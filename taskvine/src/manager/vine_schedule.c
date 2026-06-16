@@ -401,6 +401,13 @@ struct vine_worker_info *vine_schedule_task_to_worker(struct vine_manager *q, st
 			}
 		}
 
+		if (q->cpop_categories) {
+			/* skip if this worker is cpop reserved and the task is not in the critical path */
+			if (w->cpop_reserved && (!strcmp(t->category, q->current_cpop))) {
+				continue;
+			}
+		}
+
 		/* compute the size of cached and uncached input files on the worker */
 		int64_t uncached_input_size = 0;
 		int64_t cached_input_size = 0;

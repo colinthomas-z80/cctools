@@ -48,6 +48,8 @@ struct vine_worker_info *vine_worker_create(struct link *lnk)
 	w->incoming_xfer_counter = 0;
 	w->outgoing_xfer_counter = 0;
 
+	w->cpop_reserved = 0;
+
 	return w;
 }
 
