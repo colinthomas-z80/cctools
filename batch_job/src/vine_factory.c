@@ -82,6 +82,12 @@ static int workers_min = 5;
 static int workers_max = 100;
 static int workers_per_cycle = 5; // same as workers_min
 
+// Workers added or removed per cycle when a manager reports a resource signal.
+static int signal_step = 1;
+
+// Maps manager host:port -> int* target number of workers set by its resource signal.
+static struct hash_table *signal_targets = 0;
+
 static int tasks_per_worker = -1;
 static int autosize = 0;
 static int worker_timeout = 300;
@@ -402,6 +408,49 @@ static int count_workers_connected( struct list *managers_list )
 }
 
 /*
+A manager regulating its subgraph throughput reports a resource signal
+(under, optimal, over). The target for that manager starts from the usual
+estimate, grows by signal_step once the workers already requested have
+connected, shrinks by signal_step when over-allocated, and holds otherwise,
+so that workers that exit are replaced.
+*/
+
+static int workers_needed_by_signal(struct jx *j, const char *signal, int estimate)
+{
+	const char *host = jx_lookup_string(j,"name");
+	const int port = jx_lookup_integer(j,"port");
+	const int connected = jx_lookup_integer(j,"workers_connected");
+
+	if(!signal_targets) {
+		signal_targets = hash_table_create(0, 0);
+	}
+
+	char *key = string_format("%s:%d", host ? host : "unknown", port);
+
+	int *target = hash_table_lookup(signal_targets, key);
+	if(!target) {
+		target = malloc(sizeof(*target));
+		*target = estimate;
+		hash_table_insert(signal_targets, key, target);
+	}
+
+	if(!strcmp(signal, "under")) {
+		if(connected >= *target) {
+			*target = connected + signal_step;
+		}
+	} else if(!strcmp(signal, "over")) {
+		*target = MAX(0, MIN(*target, connected) - signal_step);
+	}
+
+	*target = MIN(*target, workers_max);
+
+	debug(D_VINE,"%s resource signal: %s, workers connected: %d, target: %d", key, signal, connected, *target);
+
+	free(key);
+	return *target;
+}
+
+/*
 Count up the workers needed in a given list of managers, IGNORING how many
 workers are actually connected.
 */
@@ -454,6 +503,11 @@ static int count_workers_needed( struct list *managers_list, int only_not_runnin
 
 		if(consider_capacity && capacity > 0) {
 			need = MIN(need, capacity);
+		}
+
+		const char *signal = jx_lookup_string(j,"resource_signal");
+		if(signal) {
+			need = workers_needed_by_signal(j, signal, need);
 		}
 
 		debug(D_VINE,"%s %s:%d %s tasks: %d capacity: %d workers needed: %d tasks running: %d",project,host,port,owner,tw+tl+tr,capacity,need,tr);
@@ -1354,6 +1408,7 @@ static void show_help(const char *cmd)
 	printf(" %-30s Minimum workers running (default=%d).\n", "-w,--min-workers", workers_min);
 	printf(" %-30s Maximum workers running (default=%d).\n", "-W,--max-workers", workers_max);
 	printf(" %-30s Max number of new workers per %ds (default=%d)\n", "--workers-per-cycle", factory_period, workers_per_cycle);
+	printf(" %-30s Workers added or removed per cycle on a manager resource signal (default=%d)\n", "--signal-step", signal_step);
 	printf(" %-30s Workers abort after idle time (default=%d).\n", "-t,--timeout=<time>",worker_timeout);
 	printf(" %-30s Exit after no manager seen in <n> seconds.\n", "--factory-timeout");
 	printf(" %-30s Evaluate worker needs every <n> seconds. (default=%d)\n", "--factory-period",factory_period);
@@ -1420,6 +1475,7 @@ enum{   LONG_OPT_CORES = 255,
 		LONG_OPT_DISABLE_AFS_CHECK,
 		LONG_OPT_SINGLE_SHOT,
 		LONG_OPT_TRANSFER_PORT,
+		LONG_OPT_SIGNAL_STEP,
 };
 
 static const struct option long_options[] = {
@@ -1472,6 +1528,7 @@ static const struct option long_options[] = {
 	{"tls-sni", required_argument, 0, LONG_OPT_TLS_SNI},
 	{"factory-name",required_argument, 0, LONG_OPT_FACTORY_NAME},
 	{"single-shot", no_argument, 0, LONG_OPT_SINGLE_SHOT},
+	{"signal-step", required_argument, 0, LONG_OPT_SIGNAL_STEP},
 	{"transfer-port", required_argument, 0, LONG_OPT_TRANSFER_PORT},
 	{0,0,0,0}
 };
@@ -1533,6 +1590,9 @@ int main(int argc, char *argv[])
 				break;
 			case LONG_OPT_WORKERS_PER_CYCLE:
 				workers_per_cycle = atoi(optarg);
+				break;
+			case LONG_OPT_SIGNAL_STEP:
+				signal_step = MAX(1, atoi(optarg));
 				break;
 			case LONG_OPT_TASKS_PER_WORKER:
 				tasks_per_worker = atof(optarg);
