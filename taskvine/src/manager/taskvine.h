@@ -454,6 +454,13 @@ to possess data locality and parallelism opportunities.
 */
 void vine_task_set_semantic_category(struct vine_task *t, const char *category);
 
+/** Mark the task as an output of its semantic category.
+A subgraph may have multiple output tasks.
+@param t A task object.
+@param is_output Non-zero if the task is an output of its semantic category.
+*/
+void vine_task_set_semantic_output(struct vine_task *t, int is_output);
+
 /** Label the task with a user-defined feature. The task will only run on a worker that provides (--feature option) such
 feature.
 @param t A task object.

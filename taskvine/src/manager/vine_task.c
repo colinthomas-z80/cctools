@@ -489,6 +489,11 @@ void vine_task_set_semantic_category(struct vine_task *t, const char *semantic_c
 	t->user_priority = hash_prio;
 }
 
+void vine_task_set_semantic_output(struct vine_task *t, int is_output)
+{
+	t->semantic_output = !!is_output;
+}
+
 void vine_task_add_feature(struct vine_task *t, const char *name)
 {
 	if (!name) {

@@ -58,7 +58,7 @@ class Task(object):
         attributes = [
             "library_required",
             "library_provided",
-            "scheduler", "tag", "category", "semantic_category",
+            "scheduler", "tag", "category", "semantic_category", "semantic_output",
             "snapshot_file", "retries", "cores", "memory",
             "disk", "gpus", "priority", "time_end",
             "time_start", "time_max", "time_min", "monitor_output"
@@ -334,6 +334,15 @@ class Task(object):
     # @param name       The name of the category
     def set_semantic_category(self, name):
         return cvine.vine_task_set_semantic_category(self._task, name)
+
+    ##
+    # Mark the task as an output of its semantic category. 
+    # A subgraph may have several output tasks; it still counts as one result.
+    #
+    # @param self       Reference to the current task object.
+    # @param is_output  True if the task is an output of its semantic category.
+    def set_semantic_output(self, is_output=True):
+        return cvine.vine_task_set_semantic_output(self._task, 1 if is_output else 0)
 
     ##
     # Label the task with the given user-defined feature. Tasks with the
