@@ -223,6 +223,8 @@ struct vine_task *vine_task_copy(const struct vine_task *task)
 		vine_task_set_tag(new, task->tag);
 	if (task->category)
 		vine_task_set_category(new, task->category);
+	if (task->semantic_category)
+		vine_task_set_semantic_category(new, task->semantic_category);
 
 	if (task->monitor_output_directory) {
 		vine_task_set_monitor_output(new, task->monitor_output_directory);
@@ -766,6 +768,7 @@ void vine_task_delete(struct vine_task *t)
 	free(t->command_line);
 	free(t->tag);
 	free(t->category);
+	free(t->semantic_category);
 
 	free(t->needs_library);
 	free(t->provides_library);
