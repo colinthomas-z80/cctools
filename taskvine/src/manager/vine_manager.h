@@ -117,6 +117,7 @@ struct vine_manager {
 	struct hash_table *worker_table;     /* Maps link -> vine_worker_info */
 	struct hash_table *worker_blocklist; /* Maps hostname -> vine_blocklist_info */
 	struct hash_table *factory_table;    /* Maps factory_name -> vine_factory_info */
+	struct vine_regulator *regulator;    /* Semantic region tracking and result throughput regulation. */
 	struct hash_table *workers_with_watched_file_updates;  /* Maps link -> vine_worker_info */
 	struct hash_table *current_transfer_table; 	/* Maps uuid -> struct transfer_pair */
 	struct itable     *task_group_table; 	/* Maps group id -> list vine_task */

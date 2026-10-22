@@ -31,6 +31,8 @@ void vine_txn_log_write_cache_update(struct vine_manager *q, struct vine_worker_
 void vine_txn_log_write_worker_resources(struct vine_manager *q, struct vine_worker_info *w);
 void vine_txn_log_write_library_update(struct vine_manager *q, struct vine_worker_info *w, int library_id, vine_library_state_t state);
 void vine_txn_log_write_app_entry(struct vine_manager *q, const char *entry);
+void vine_txn_log_write_subgraph(struct vine_manager *q, const char *name, const char *event, double work, double span);
+void vine_txn_log_write_regulator(struct vine_manager *q, const char *event);
 
 #endif
 

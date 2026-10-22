@@ -23,6 +23,7 @@ See the file COPYING for details.
 #include "vine_resources.h"
 #include "vine_runtime_dir.h"
 #include "vine_schedule.h"
+#include "vine_semantic_region.h"
 #include "vine_task.h"
 #include "vine_task_groups.h"
 #include "vine_task_info.h"
@@ -2252,6 +2253,7 @@ static struct jx *manager_to_jx(struct vine_manager *q)
 	jx_insert_integer(j, "tasks_with_results", info.tasks_with_results);
 	jx_insert_integer(j, "tasks_recovery", info.tasks_recovery);
 	jx_insert_integer(j, "tasks_left", q->num_tasks_left);
+	vine_regulator_to_jx(q, j);
 
 	jx_insert_integer(j, "tasks_submitted", info.tasks_submitted);
 	jx_insert_integer(j, "tasks_dispatched", info.tasks_dispatched);
@@ -2378,6 +2380,7 @@ static struct jx *manager_lean_to_jx(struct vine_manager *q)
 	// additional task information for vine_factory
 	jx_insert_integer(j, "tasks_on_workers", info.tasks_on_workers);
 	jx_insert_integer(j, "tasks_left", q->num_tasks_left);
+	vine_regulator_to_jx(q, j);
 
 	// capacity information the factory needs
 	jx_insert_integer(j, "capacity_tasks", info.capacity_tasks);
@@ -3749,6 +3752,11 @@ int consider_task(struct vine_manager *q, struct vine_task *t)
 		return 0;
 	}
 
+	// Skip if the task's semantic region is outside the dispatch window
+	if (!vine_regulator_task_eligible(q, t)) {
+		return 0;
+	}
+
 	// Skip task if temp input files have not been materialized.
 	if (!vine_manager_check_inputs_available(q, t)) {
 		return 0;
@@ -3835,6 +3843,8 @@ static int send_one_task_with_cr(struct vine_manager *q, struct skip_list_cursor
 				push_task_to_ready_tasks(q, t);
 				break;
 			}
+		} else {
+			vine_regulator_blocked_on_capacity(q, t);
 		}
 	}
 
@@ -4338,6 +4348,7 @@ struct vine_manager *vine_ssl_create(int port, const char *key, const char *cert
 	q->file_table = hash_table_create(0, 0);
 
 	q->factory_table = hash_table_create(0, 0);
+	q->regulator = vine_regulator_create();
 	q->current_transfer_table = hash_table_create(0, 0);
 	q->task_group_table = itable_create(0);
 	q->group_id_counter = 1;
@@ -4706,6 +4717,7 @@ void vine_delete(struct vine_manager *q)
 
 	hash_table_clear(q->factory_table, (void *)vine_factory_info_delete);
 	hash_table_delete(q->factory_table);
+	vine_regulator_delete(q->regulator);
 
 	hash_table_clear(q->worker_blocklist, (void *)vine_blocklist_info_delete);
 	hash_table_delete(q->worker_blocklist);
@@ -4982,6 +4994,15 @@ static vine_task_state_t change_task_state(struct vine_manager *q, struct vine_t
 		}
 		vine_taskgraph_log_write_task(q, t);
 		break;
+	}
+
+	/* Keep the semantic regions up to date. */
+	if (old_state == VINE_TASK_INITIAL && new_state == VINE_TASK_READY) {
+		vine_regulator_task_submitted(q, t);
+	} else if (new_state == VINE_TASK_RUNNING) {
+		vine_regulator_task_dispatched(q, t);
+	} else if (new_state == VINE_TASK_RETRIEVED) {
+		vine_regulator_task_finished(q, t);
 	}
 
 	vine_perf_log_write_update(q, 0);
@@ -5785,6 +5806,8 @@ static struct vine_task *vine_wait_internal(struct vine_manager *q, int timeout,
 			vine_schedule_check_for_large_tasks(q);
 		}
 
+		vine_regulator_update(q);
+
 		// if we got here, no events were triggered this time around.
 		// if we went through the entire ready list without finding a task to dispatch,
 		// we set the nothing_happened_last_wait_cycle flag so that link_poll waits for some time
@@ -6165,6 +6188,22 @@ int vine_tune(struct vine_manager *q, const char *name, double value)
 
 	} else if (!strcmp(name, "shift-disk-load")) {
 		q->shift_disk_load = !!((int)value);
+
+	} else if (!strcmp(name, "subgraph-window")) {
+		q->regulator->window_target = MAX(0, (int)value);
+		q->regulator->window = q->regulator->window_target;
+
+	} else if (!strcmp(name, "subgraph-sample-interval")) {
+		q->regulator->sample_interval = MAX(0, value);
+
+	} else if (!strcmp(name, "subgraph-work-weighted")) {
+		q->regulator->work_weighted = !!((int)value);
+
+	} else if (!strcmp(name, "subgraph-saturation")) {
+		q->regulator->saturation = MIN(1, MAX(0, value));
+
+	} else if (!strcmp(name, "subgraph-idle")) {
+		q->regulator->idle = MIN(1, MAX(0, value));
 
 	} else {
 		debug(D_NOTICE | D_VINE, "Warning: tuning parameter \"%s\" not recognized\n", name);

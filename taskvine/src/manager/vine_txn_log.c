@@ -7,6 +7,7 @@ See the file COPYING for details.
 #include "vine_txn_log.h"
 #include "vine_file.h"
 #include "vine_task.h"
+#include "vine_semantic_region.h"
 #include "vine_worker_info.h"
 
 #include "buffer.h"
@@ -51,6 +52,9 @@ void vine_txn_log_write_header(struct vine_manager *q)
 			"# time manager_pid TASK task_id DONE (SUCCESS|UNKNOWN|INPUT_MISSING|OUTPUT_MISSING|STDOUT_MISSING|SIGNAL|RESOURCE_EXHAUSTION|MAX_RETRIES|MAX_END_TIME|MAX_WALL_TIME|FORSAKEN) exit_code\n");
 	fprintf(q->txn_logfile, "# time manager_pid LIBRARY library_id (WAITING|SENT|STARTED|FAILURE) worker_id\n");
 	fprintf(q->txn_logfile, "# time manager_pid APPLICATION message*\n");
+	fprintf(q->txn_logfile, "# time manager_pid SUBGRAPH semantic_category (COMPLETE|FAILED) work_core_seconds span_seconds\n");
+	fprintf(q->txn_logfile,
+			"# time manager_pid REGULATOR (SAMPLE|SIGNAL) (under|optimal|over) window window_target in_flight results last_sample rate_avg lead_lag\n");
 }
 
 static struct jx *resources_with_io_report(const struct vine_task *t, const struct rmsummary *s)
@@ -360,3 +364,39 @@ void vine_txn_log_write_app_entry(struct vine_manager *q, const char *entry)
 }
 
 /* vim: set noexpandtab tabstop=8: */
+
+void vine_txn_log_write_subgraph(struct vine_manager *q, const char *name, const char *event, double work, double span)
+{
+	if (!q->txn_logfile)
+		return;
+
+	struct buffer B;
+	buffer_init(&B);
+	buffer_printf(&B, "SUBGRAPH %s %s %.3f %.3f", name, event, work, span);
+	vine_txn_log_write(q, buffer_tostring(&B));
+	buffer_free(&B);
+}
+
+void vine_txn_log_write_regulator(struct vine_manager *q, const char *event)
+{
+	if (!q->txn_logfile)
+		return;
+
+	struct vine_regulator *r = q->regulator;
+
+	struct buffer B;
+	buffer_init(&B);
+	buffer_printf(&B,
+			"REGULATOR %s %s %d %d %d %d %.3f %.6f %.3f",
+			event,
+			vine_resource_signal_string(r->signal),
+			r->window,
+			r->window_target,
+			r->regions_in_flight,
+			r->results,
+			r->last_sample,
+			r->rate_avg,
+			r->lead_lag);
+	vine_txn_log_write(q, buffer_tostring(&B));
+	buffer_free(&B);
+}

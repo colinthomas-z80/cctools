@@ -8,6 +8,7 @@ SOURCES = \
 	vine_manager_factory.c \
 	vine_manager_summarize.c \
 	vine_schedule.c \
+	vine_semantic_region.c \
 	vine_worker_info.c \
 	vine_catalog.c \
 	vine_counters.c \
