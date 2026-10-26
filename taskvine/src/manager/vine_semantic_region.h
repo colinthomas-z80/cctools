@@ -20,6 +20,11 @@ admitted for dispatch at a time. Every sample interval the number of results is
 compared against the running average rate, and W is widened (below average) or
 narrowed (above average) within [1, k]. The manager then reports a resource signal
 (under, optimal, over) in its status so that a vine_factory can adjust its workers.
+
+The signal is decided once per signal interval from time-weighted averages of core
+utilization and of the time window tasks spent waiting for a worker. The manager also
+reports the cores the window can use, from the peak concurrency the application gives
+for each region (vine_set_semantic_concurrency), so a factory can size its first request.
 */
 
 #include "jx.h"
@@ -43,6 +48,9 @@ struct vine_semantic_region {
 	int active;          /* Admitted to the dispatch window. */
 	int complete;        /* Result has been produced (or the region failed). */
 	int in_flight;       /* Active, not complete, and with tasks pending. */
+	int concurrency;     /* Peak tasks that can run at once, from the application. 0 uses the default. */
+	int tasks_submitted; /* Tasks ever submitted with this label. */
+	double cores_submitted; /* Cores requested by those tasks, counting 1 when unset. */
 	double work;         /* Core-seconds of the tasks retrieved so far. */
 	timestamp_t time_first_dispatch;
 	timestamp_t time_complete;
@@ -57,6 +65,8 @@ struct vine_regulator {
 	int work_weighted;      /* Count results as w_k / mean work instead of 1. */
 	double saturation;      /* Cores are saturated when committed >= (1 - saturation) * total. */
 	double idle;            /* Cores are idle when free >= idle * total. */
+	int concurrency;        /* Default peak concurrency of a region. */
+	double signal_interval; /* Seconds between resource signal decisions. */
 
 	/* Regulator state */
 	int window;           /* W: current number of regions admitted for dispatch. */
@@ -74,12 +84,19 @@ struct vine_regulator {
 	double lead_lag;     /* Sum of the deviations of each sample from the average. */
 	int last_sample_below;
 
-	/* Resource signal */
-	timestamp_t time_last_check;
-	int blocked_on_capacity; /* A window task found no worker since the last check. */
+	/* Resource signal, from time-weighted averages over each signal interval. */
+	timestamp_t time_last_accumulate;
+	timestamp_t interval_start;
+	int blocked_on_capacity; /* A window task found no worker since the last accumulation. */
+	double acc_time;         /* Seconds accumulated in this interval. */
+	double acc_busy;         /* Committed core-seconds. */
+	double acc_total;        /* Available core-seconds. */
+	double acc_blocked;      /* Seconds with a window task waiting for a worker. */
+	double acc_starved;      /* Seconds with tasks waiting and no workers at all. */
+	double acc_in_flight;    /* Region-seconds in flight. */
+	double utilization;      /* Committed / available cores over the last interval. */
+	double blocked;          /* Fraction of the last interval with a window task waiting for a worker. */
 	vine_resource_signal_t signal;
-	vine_resource_signal_t candidate;
-	int candidate_checks;
 };
 
 struct vine_regulator *vine_regulator_create(void);
@@ -101,6 +118,12 @@ void vine_regulator_update(struct vine_manager *q);
 
 /* Add regulator fields to a manager status object. */
 void vine_regulator_to_jx(struct vine_manager *q, struct jx *j);
+
+/* Set the peak concurrency of the region with this semantic category. */
+void vine_regulator_set_concurrency(struct vine_regulator *r, const char *name, int tasks);
+
+/* Cores the regions in the window can use at once. */
+double vine_regulator_window_cores(struct vine_regulator *r);
 
 int vine_regulator_regions_in_flight(struct vine_regulator *r);
 const char *vine_resource_signal_string(vine_resource_signal_t signal);

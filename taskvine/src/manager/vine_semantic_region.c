@@ -20,10 +20,12 @@ See the file COPYING for details.
 #include <stdlib.h>
 #include <string.h>
 
-/* Seconds between checks of worker saturation and idleness. */
-#define VINE_REGULATOR_CHECK_INTERVAL 5
-/* Consecutive checks with the same outcome needed to change the resource signal. */
-#define VINE_REGULATOR_SIGNAL_CHECKS 3
+/* Seconds between accumulations of core utilization and blocked time. */
+#define VINE_REGULATOR_ACCUMULATE_INTERVAL 1
+/* Fraction of a signal interval with window tasks waiting for a worker to be under-allocated. */
+#define VINE_REGULATOR_UNDER_BLOCKED 0.5
+/* Below this fraction of blocked time, idle cores make the manager over-allocated. */
+#define VINE_REGULATOR_OVER_BLOCKED 0.1
 /* Automatic sample interval: this many mean gaps between results, at least the minimum. */
 #define VINE_REGULATOR_SAMPLE_GAPS 10
 #define VINE_REGULATOR_SAMPLE_MIN 60
@@ -35,8 +37,9 @@ struct vine_regulator *vine_regulator_create(void)
 	r->work_weighted = 1;
 	r->saturation = 0.05;
 	r->idle = 0.25;
+	r->concurrency = 1;
+	r->signal_interval = 15;
 	r->signal = VINE_RESOURCE_SIGNAL_OPTIMAL;
-	r->candidate = VINE_RESOURCE_SIGNAL_OPTIMAL;
 	return r;
 }
 
@@ -80,6 +83,18 @@ static int regulator_enabled(struct vine_regulator *r)
 	return r && r->window_target > 0;
 }
 
+static struct vine_semantic_region *region_lookup(struct vine_regulator *r, const char *name, int create)
+{
+	struct vine_semantic_region *region = hash_table_lookup(r->regions, name);
+	if (!region && create) {
+		region = calloc(1, sizeof(*region));
+		region->name = xxstrdup(name);
+		hash_table_insert(r->regions, region->name, region);
+	}
+
+	return region;
+}
+
 /* Only standard tasks with a non-default label belong to a region. */
 static struct vine_semantic_region *region_of_task(struct vine_regulator *r, struct vine_task *t, int create)
 {
@@ -89,14 +104,7 @@ static struct vine_semantic_region *region_of_task(struct vine_regulator *r, str
 	if (!t->semantic_category || !strcmp(t->semantic_category, "default"))
 		return 0;
 
-	struct vine_semantic_region *region = hash_table_lookup(r->regions, t->semantic_category);
-	if (!region && create) {
-		region = calloc(1, sizeof(*region));
-		region->name = xxstrdup(t->semantic_category);
-		hash_table_insert(r->regions, region->name, region);
-	}
-
-	return region;
+	return region_lookup(r, t->semantic_category, create);
 }
 
 /* Keep the count of regions in flight consistent after any change to a region. */
@@ -183,6 +191,9 @@ void vine_regulator_task_submitted(struct vine_manager *q, struct vine_task *t)
 	}
 
 	region->tasks_pending++;
+	region->tasks_submitted++;
+	region->cores_submitted += (t->resources_requested && t->resources_requested->cores > 0) ? t->resources_requested->cores : 1;
+
 	if (t->semantic_output) {
 		region->outputs_pending++;
 		region->outputs_seen++;
@@ -301,28 +312,58 @@ static void regulator_close_sample(struct vine_manager *q, timestamp_t now)
 	vine_txn_log_write_regulator(q, "SAMPLE");
 }
 
-static vine_resource_signal_t regulator_candidate_signal(struct vine_manager *q)
+/* Add the time since the last accumulation to the averages of this signal interval. */
+static void regulator_accumulate(struct vine_manager *q, timestamp_t now)
 {
 	struct vine_regulator *r = q->regulator;
+
+	double dt = ((double)(now - r->time_last_accumulate)) / ONE_SECOND;
+	r->time_last_accumulate = now;
 
 	struct vine_stats s;
 	vine_get_stats(q, &s);
 
-	int ready_tasks = s.tasks_waiting > 0;
+	r->acc_time += dt;
+	r->acc_busy += s.committed_cores * dt;
+	r->acc_total += s.total_cores * dt;
+	r->acc_in_flight += r->regions_in_flight * dt;
 
-	/* With no workers at all and work to do, the manager is starved. */
-	if (s.total_cores < 1) {
-		return ready_tasks ? VINE_RESOURCE_SIGNAL_UNDER : VINE_RESOURCE_SIGNAL_OPTIMAL;
+	if (r->blocked_on_capacity) {
+		r->acc_blocked += dt;
 	}
 
-	double committed = s.committed_cores;
-	double total = s.total_cores;
+	if (s.total_cores < 1 && s.tasks_waiting > 0) {
+		r->acc_starved += dt;
+	}
 
-	int saturated = r->blocked_on_capacity && committed >= (1 - r->saturation) * total;
-	int idle = (total - committed) >= r->idle * total;
+	r->blocked_on_capacity = 0;
+}
+
+/* Decide the resource signal from the averages of the interval that just ended. */
+static vine_resource_signal_t regulator_decide_signal(struct vine_regulator *r)
+{
+	if (r->acc_time <= 0)
+		return r->signal;
+
+	r->utilization = r->acc_total > 0 ? r->acc_busy / r->acc_total : 0;
+	r->blocked = r->acc_blocked / r->acc_time;
+
+	double avg_in_flight = r->acc_in_flight / r->acc_time;
+
+	/* With no workers at all and work to do, the manager is starved. */
+	if (r->acc_starved / r->acc_time >= 0.5) {
+		return VINE_RESOURCE_SIGNAL_UNDER;
+	}
+
+	if (r->acc_total <= 0) {
+		return VINE_RESOURCE_SIGNAL_OPTIMAL;
+	}
 
 	int no_results_yet = r->results < 2;
-	int window_open = r->regions_in_flight < r->window;
+	int window_open = avg_in_flight < r->window;
+
+	int saturated = r->utilization >= 1 - r->saturation && r->blocked >= VINE_REGULATOR_UNDER_BLOCKED;
+	int idle = 1 - r->utilization >= r->idle && r->blocked < VINE_REGULATOR_OVER_BLOCKED;
 
 	if (saturated && (no_results_yet || r->last_sample_below || window_open)) {
 		return VINE_RESOURCE_SIGNAL_UNDER;
@@ -332,7 +373,7 @@ static vine_resource_signal_t regulator_candidate_signal(struct vine_manager *q)
 	Idle cores while the window is full and may still widen are handled by the
 	throughput loop. Otherwise there is not enough eligible work for the workers.
 	*/
-	if (idle && (r->window >= r->window_target || window_open || !ready_tasks)) {
+	if (idle && (r->window >= r->window_target || window_open)) {
 		return VINE_RESOURCE_SIGNAL_OVER;
 	}
 
@@ -346,29 +387,86 @@ void vine_regulator_update(struct vine_manager *q)
 		return;
 
 	timestamp_t now = timestamp_get();
-	if (now - r->time_last_check < VINE_REGULATOR_CHECK_INTERVAL * ONE_SECOND)
+
+	if (!r->time_last_accumulate) {
+		r->time_last_accumulate = now;
+		r->interval_start = now;
 		return;
-	r->time_last_check = now;
+	}
+
+	if (now - r->time_last_accumulate < VINE_REGULATOR_ACCUMULATE_INTERVAL * ONE_SECOND)
+		return;
+
+	regulator_accumulate(q, now);
 
 	if (r->results > 0 && ((double)(now - r->sample_start)) / ONE_SECOND >= regulator_sample_interval(r)) {
 		regulator_close_sample(q, now);
 	}
 
-	vine_resource_signal_t candidate = regulator_candidate_signal(q);
-	r->blocked_on_capacity = 0;
+	if (((double)(now - r->interval_start)) / ONE_SECOND < r->signal_interval)
+		return;
 
-	if (candidate == r->candidate) {
-		r->candidate_checks++;
-	} else {
-		r->candidate = candidate;
-		r->candidate_checks = 1;
-	}
+	vine_resource_signal_t signal = regulator_decide_signal(r);
+	vine_resource_signal_t previous = r->signal;
+	r->signal = signal;
 
-	if (r->candidate != r->signal && r->candidate_checks >= VINE_REGULATOR_SIGNAL_CHECKS) {
-		debug(D_VINE, "resource signal changed from %s to %s", vine_resource_signal_string(r->signal), vine_resource_signal_string(r->candidate));
-		r->signal = r->candidate;
+	vine_txn_log_write_regulator(q, "CHECK");
+
+	if (signal != previous) {
+		debug(D_VINE, "resource signal changed from %s to %s", vine_resource_signal_string(previous), vine_resource_signal_string(signal));
 		vine_txn_log_write_regulator(q, "SIGNAL");
 	}
+
+	r->interval_start = now;
+	r->acc_time = 0;
+	r->acc_busy = 0;
+	r->acc_total = 0;
+	r->acc_blocked = 0;
+	r->acc_starved = 0;
+	r->acc_in_flight = 0;
+}
+
+static double region_concurrency_cores(struct vine_regulator *r, struct vine_semantic_region *region)
+{
+	int concurrency = region->concurrency > 0 ? region->concurrency : r->concurrency;
+	double cores_per_task = region->tasks_submitted > 0 ? region->cores_submitted / region->tasks_submitted : 1;
+	return concurrency * cores_per_task;
+}
+
+double vine_regulator_window_cores(struct vine_regulator *r)
+{
+	double in_flight_cores = 0;
+	double waiting_cores = 0;
+	int waiting = 0;
+
+	char *name;
+	struct vine_semantic_region *region;
+	int iteration;
+	HASH_TABLE_ITERATE(r->regions, iteration, name, region)
+	{
+		if (region->in_flight) {
+			in_flight_cores += region_concurrency_cores(r, region);
+		} else if (!region->active && !region->complete && region->tasks_pending > 0) {
+			waiting_cores += region_concurrency_cores(r, region);
+			waiting++;
+		}
+	}
+
+	int free_slots = MAX(0, r->window - r->regions_in_flight);
+	if (waiting > 0) {
+		in_flight_cores += MIN(free_slots, waiting) * (waiting_cores / waiting);
+	}
+
+	return in_flight_cores;
+}
+
+void vine_regulator_set_concurrency(struct vine_regulator *r, const char *name, int tasks)
+{
+	if (!r || !name)
+		return;
+
+	struct vine_semantic_region *region = region_lookup(r, name, 1);
+	region->concurrency = MAX(0, tasks);
 }
 
 void vine_regulator_to_jx(struct vine_manager *q, struct jx *j)
@@ -385,4 +483,5 @@ void vine_regulator_to_jx(struct vine_manager *q, struct jx *j)
 	jx_insert_double(j, "subgraph_rate_avg", r->rate_avg);
 	jx_insert_double(j, "subgraph_last_sample", r->last_sample);
 	jx_insert_double(j, "subgraph_lead_lag", r->lead_lag);
+	jx_insert_double(j, "subgraph_window_cores", vine_regulator_window_cores(r));
 }

@@ -1309,6 +1309,16 @@ void vine_set_scheduler(struct vine_manager *m, vine_schedule_t algorithm);
 */
 void vine_set_priority(struct vine_manager *m, int priority);
 
+/** Specify how many tasks of a semantic category can run at once.
+vine_factory uses it to size its first request for workers, as the
+concurrency of the subgraphs that fit in the window.
+If not specified, the tune parameter subgraph-concurrency is used, which defaults to 1.
+@param m A manager object
+@param semantic_category The semantic category of the subgraph.
+@param tasks Number of tasks of the subgraph that can run at once.
+*/
+void vine_set_semantic_concurrency(struct vine_manager *m, const char *semantic_category, int tasks);
+
 /** Specify the number of tasks not yet submitted to the manager.
 It is used by vine_factory to determine the number of workers to launch.
 If not specified, it defaults to 0.

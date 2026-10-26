@@ -4614,6 +4614,11 @@ void vine_set_priority(struct vine_manager *q, int priority)
 	q->priority = priority;
 }
 
+void vine_set_semantic_concurrency(struct vine_manager *q, const char *semantic_category, int tasks)
+{
+	vine_regulator_set_concurrency(q->regulator, semantic_category, tasks);
+}
+
 void vine_set_tasks_left_count(struct vine_manager *q, int ntasks)
 {
 	if (ntasks < 1) {
@@ -6204,6 +6209,12 @@ int vine_tune(struct vine_manager *q, const char *name, double value)
 
 	} else if (!strcmp(name, "subgraph-idle")) {
 		q->regulator->idle = MIN(1, MAX(0, value));
+
+	} else if (!strcmp(name, "subgraph-concurrency")) {
+		q->regulator->concurrency = MAX(1, (int)value);
+
+	} else if (!strcmp(name, "subgraph-signal-interval")) {
+		q->regulator->signal_interval = MAX(1, value);
 
 	} else {
 		debug(D_NOTICE | D_VINE, "Warning: tuning parameter \"%s\" not recognized\n", name);

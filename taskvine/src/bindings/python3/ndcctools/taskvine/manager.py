@@ -650,6 +650,18 @@ class Manager(object):
         return cvine.vine_set_tasks_left_count(self._taskvine, ntasks)
 
     ##
+    # Specify how many tasks of a semantic category can run at once.
+    # vine_factory uses it to size its first request for workers, as the
+    # concurrency of the subgraphs that fit in the window.
+    # If not specified, the tune parameter subgraph-concurrency is used, which defaults to 1.
+    #
+    # @param self              Reference to the current manager object.
+    # @param semantic_category The semantic category of the subgraph.
+    # @param tasks             Number of tasks of the subgraph that can run at once.
+    def set_semantic_concurrency(self, semantic_category, tasks):
+        return cvine.vine_set_semantic_concurrency(self._taskvine, semantic_category, tasks)
+
+    ##
     # Specify the catalog servers the manager should report to.
     #
     # @param self       Reference to the current manager object.

@@ -409,10 +409,11 @@ static int count_workers_connected( struct list *managers_list )
 
 /*
 A manager regulating its subgraph throughput reports a resource signal
-(under, optimal, over). The target for that manager starts from the usual
-estimate, grows by signal_step once the workers already requested have
-connected, shrinks by signal_step when over-allocated, and holds otherwise,
-so that workers that exit are replaced.
+(under, optimal, over). The target for that manager starts from the cores
+its window of subgraphs can use at once, or from the usual estimate if it
+does not report them. It then grows by signal_step once the workers already
+requested have connected, shrinks by signal_step when over-allocated, and
+holds otherwise, so that workers that exit are replaced.
 */
 
 static int workers_needed_by_signal(struct jx *j, const char *signal, int estimate)
@@ -431,6 +432,15 @@ static int workers_needed_by_signal(struct jx *j, const char *signal, int estima
 	if(!target) {
 		target = malloc(sizeof(*target));
 		*target = estimate;
+
+		// A whole number of cores is sent without a fraction and arrives as an integer.
+		struct jx *window_cores = jx_lookup(j,"subgraph_window_cores");
+		if(window_cores && (jx_istype(window_cores, JX_DOUBLE) || jx_istype(window_cores, JX_INTEGER))) {
+			double cores = jx_istype(window_cores, JX_DOUBLE) ? window_cores->u.double_value : window_cores->u.integer_value;
+			double worker_cores = resources->cores > 0 ? resources->cores : 1;
+			*target = MAX(workers_min, (int) ceil(cores / worker_cores));
+		}
+
 		hash_table_insert(signal_targets, key, target);
 	}
 

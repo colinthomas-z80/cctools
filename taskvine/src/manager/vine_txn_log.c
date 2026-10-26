@@ -54,7 +54,7 @@ void vine_txn_log_write_header(struct vine_manager *q)
 	fprintf(q->txn_logfile, "# time manager_pid APPLICATION message*\n");
 	fprintf(q->txn_logfile, "# time manager_pid SUBGRAPH semantic_category (COMPLETE|FAILED) work_core_seconds span_seconds\n");
 	fprintf(q->txn_logfile,
-			"# time manager_pid REGULATOR (SAMPLE|SIGNAL) (under|optimal|over) window window_target in_flight results last_sample rate_avg lead_lag\n");
+			"# time manager_pid REGULATOR (SAMPLE|CHECK|SIGNAL) (under|optimal|over) window window_target in_flight results last_sample rate_avg lead_lag utilization blocked window_cores\n");
 }
 
 static struct jx *resources_with_io_report(const struct vine_task *t, const struct rmsummary *s)
@@ -387,7 +387,7 @@ void vine_txn_log_write_regulator(struct vine_manager *q, const char *event)
 	struct buffer B;
 	buffer_init(&B);
 	buffer_printf(&B,
-			"REGULATOR %s %s %d %d %d %d %.3f %.6f %.3f",
+			"REGULATOR %s %s %d %d %d %d %.3f %.6f %.3f %.3f %.3f %.1f",
 			event,
 			vine_resource_signal_string(r->signal),
 			r->window,
@@ -396,7 +396,10 @@ void vine_txn_log_write_regulator(struct vine_manager *q, const char *event)
 			r->results,
 			r->last_sample,
 			r->rate_avg,
-			r->lead_lag);
+			r->lead_lag,
+			r->utilization,
+			r->blocked,
+			vine_regulator_window_cores(r));
 	vine_txn_log_write(q, buffer_tostring(&B));
 	buffer_free(&B);
 }
