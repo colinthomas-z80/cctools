@@ -6,8 +6,10 @@ See the file COPYING for details.
 
 #include "vine_semantic_region.h"
 #include "vine_manager.h"
+#include "vine_file.h"
 #include "vine_task.h"
 #include "vine_txn_log.h"
+#include "vine_worker_info.h"
 
 #include "debug.h"
 #include "hash_table.h"
@@ -39,6 +41,7 @@ struct vine_regulator *vine_regulator_create(void)
 	r->idle = 0.25;
 	r->concurrency = 1;
 	r->signal_interval = 15;
+	r->release = 1;
 	r->signal = VINE_RESOURCE_SIGNAL_OPTIMAL;
 	return r;
 }
@@ -380,6 +383,64 @@ static vine_resource_signal_t regulator_decide_signal(struct vine_regulator *r)
 	return VINE_RESOURCE_SIGNAL_OPTIMAL;
 }
 
+static int worker_has_temp_files(struct vine_manager *q, struct vine_worker_info *w)
+{
+	char *cachename;
+	void *replica;
+	int iteration;
+	HASH_TABLE_ITERATE(w->current_files, iteration, cachename, replica)
+	{
+		struct vine_file *f = hash_table_lookup(q->file_table, cachename);
+		if (f && f->type == VINE_TEMP) {
+			return 1;
+		}
+	}
+	return 0;
+}
+
+/*
+When over-allocated, mark a few workers as draining. They receive no new tasks
+and are shut down once their current tasks finish. Workers holding temp files
+are kept, so that no intermediate data is lost, and the last worker is never drained.
+*/
+static int regulator_drain_workers(struct vine_manager *q)
+{
+	struct vine_regulator *r = q->regulator;
+	int drained = 0;
+
+	while (drained < r->release) {
+		struct vine_worker_info *candidate = 0;
+		int workers = 0;
+
+		char *key;
+		struct vine_worker_info *w;
+		int iteration;
+		HASH_TABLE_ITERATE(q->worker_table, iteration, key, w)
+		{
+			if (w->type != VINE_WORKER_TYPE_WORKER || w->draining)
+				continue;
+
+			workers++;
+
+			if (worker_has_temp_files(q, w))
+				continue;
+
+			if (!candidate || w->tasks_committed < candidate->tasks_committed) {
+				candidate = w;
+			}
+		}
+
+		if (!candidate || workers <= 1)
+			break;
+
+		debug(D_VINE, "draining worker %s (%s) as the manager is over-allocated", candidate->hostname, candidate->addrport);
+		candidate->draining = 1;
+		drained++;
+	}
+
+	return drained;
+}
+
 void vine_regulator_update(struct vine_manager *q)
 {
 	struct vine_regulator *r = q->regulator;
@@ -409,6 +470,8 @@ void vine_regulator_update(struct vine_manager *q)
 	vine_resource_signal_t signal = regulator_decide_signal(r);
 	vine_resource_signal_t previous = r->signal;
 	r->signal = signal;
+
+	r->drained = signal == VINE_RESOURCE_SIGNAL_OVER ? regulator_drain_workers(q) : 0;
 
 	vine_txn_log_write_regulator(q, "CHECK");
 

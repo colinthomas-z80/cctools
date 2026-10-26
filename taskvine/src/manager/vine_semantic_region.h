@@ -67,6 +67,7 @@ struct vine_regulator {
 	double idle;            /* Cores are idle when free >= idle * total. */
 	int concurrency;        /* Default peak concurrency of a region. */
 	double signal_interval; /* Seconds between resource signal decisions. */
+	int release;            /* Workers to drain at each over-allocated decision. */
 
 	/* Regulator state */
 	int window;           /* W: current number of regions admitted for dispatch. */
@@ -96,6 +97,7 @@ struct vine_regulator {
 	double acc_in_flight;    /* Region-seconds in flight. */
 	double utilization;      /* Committed / available cores over the last interval. */
 	double blocked;          /* Fraction of the last interval with a window task waiting for a worker. */
+	int drained;             /* Workers marked as draining at the last decision. */
 	vine_resource_signal_t signal;
 };
 

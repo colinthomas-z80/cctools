@@ -6216,6 +6216,9 @@ int vine_tune(struct vine_manager *q, const char *name, double value)
 	} else if (!strcmp(name, "subgraph-signal-interval")) {
 		q->regulator->signal_interval = MAX(1, value);
 
+	} else if (!strcmp(name, "subgraph-release")) {
+		q->regulator->release = MAX(0, (int)value);
+
 	} else {
 		debug(D_NOTICE | D_VINE, "Warning: tuning parameter \"%s\" not recognized\n", name);
 		return -1;
