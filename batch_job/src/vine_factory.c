@@ -82,7 +82,7 @@ static int workers_min = 5;
 static int workers_max = 100;
 static int workers_per_cycle = 5; // same as workers_min
 
-// Workers added or removed per cycle when a manager reports a resource signal.
+// Workers added per cycle when a manager reports it is under-allocated.
 static int signal_step = 1;
 
 // Maps manager host:port -> int* target number of workers set by its resource signal.
@@ -412,8 +412,9 @@ A manager regulating its subgraph throughput reports a resource signal
 (under, optimal, over). The target for that manager starts from the cores
 its window of subgraphs can use at once, or from the usual estimate if it
 does not report them. It then grows by signal_step once the workers already
-requested have connected, shrinks by signal_step when over-allocated, and
-holds otherwise, so that workers that exit are replaced.
+requested have connected, follows the connected workers down while the
+manager drains them when over-allocated, and holds otherwise, so that workers
+that exit are replaced. It never goes below workers_min.
 */
 
 static int workers_needed_by_signal(struct jx *j, const char *signal, int estimate)
@@ -449,10 +450,11 @@ static int workers_needed_by_signal(struct jx *j, const char *signal, int estima
 			*target = connected + signal_step;
 		}
 	} else if(!strcmp(signal, "over")) {
-		*target = MAX(0, MIN(*target, connected) - signal_step);
+		// The manager drains workers itself; hold at the workers still connected.
+		*target = MIN(*target, connected);
 	}
 
-	*target = MIN(*target, workers_max);
+	*target = MAX(workers_min, MIN(*target, workers_max));
 
 	debug(D_VINE,"%s resource signal: %s, workers connected: %d, target: %d", key, signal, connected, *target);
 
@@ -1418,7 +1420,7 @@ static void show_help(const char *cmd)
 	printf(" %-30s Minimum workers running (default=%d).\n", "-w,--min-workers", workers_min);
 	printf(" %-30s Maximum workers running (default=%d).\n", "-W,--max-workers", workers_max);
 	printf(" %-30s Max number of new workers per %ds (default=%d)\n", "--workers-per-cycle", factory_period, workers_per_cycle);
-	printf(" %-30s Workers added or removed per cycle on a manager resource signal (default=%d)\n", "--signal-step", signal_step);
+	printf(" %-30s Workers added per cycle when a manager reports it is under-allocated (default=%d)\n", "--signal-step", signal_step);
 	printf(" %-30s Workers abort after idle time (default=%d).\n", "-t,--timeout=<time>",worker_timeout);
 	printf(" %-30s Exit after no manager seen in <n> seconds.\n", "--factory-timeout");
 	printf(" %-30s Evaluate worker needs every <n> seconds. (default=%d)\n", "--factory-period",factory_period);
