@@ -6214,7 +6214,10 @@ int vine_tune(struct vine_manager *q, const char *name, double value)
 		q->regulator->concurrency = MAX(1, (int)value);
 
 	} else if (!strcmp(name, "subgraph-signal-interval")) {
-		q->regulator->signal_interval = MAX(1, value);
+		q->regulator->signal_interval = MAX(0, value);
+
+	} else if (!strcmp(name, "subgraph-signal-confirm")) {
+		q->regulator->signal_confirm = MAX(1, (int)value);
 
 	} else if (!strcmp(name, "subgraph-release")) {
 		q->regulator->release = MAX(0, (int)value);

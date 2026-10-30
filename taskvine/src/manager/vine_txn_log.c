@@ -19,6 +19,7 @@ See the file COPYING for details.
 
 #include <assert.h>
 #include <stdio.h>
+#include <string.h>
 #include <unistd.h>
 
 void vine_txn_log_write(struct vine_manager *q, const char *str)
@@ -54,7 +55,7 @@ void vine_txn_log_write_header(struct vine_manager *q)
 	fprintf(q->txn_logfile, "# time manager_pid APPLICATION message*\n");
 	fprintf(q->txn_logfile, "# time manager_pid SUBGRAPH semantic_category (COMPLETE|FAILED) work_core_seconds span_seconds\n");
 	fprintf(q->txn_logfile,
-			"# time manager_pid REGULATOR (SAMPLE|CHECK|SIGNAL) (under|optimal|over) window window_target in_flight results last_sample rate_avg lead_lag utilization blocked window_cores drained\n");
+			"# time manager_pid REGULATOR (SAMPLE|CHECK|SIGNAL) (under|optimal|over) window window_target in_flight results last_sample rate_avg lead_lag utilization blocked window_cores drained signal_interval\n");
 }
 
 static struct jx *resources_with_io_report(const struct vine_task *t, const struct rmsummary *s)
@@ -384,12 +385,15 @@ void vine_txn_log_write_regulator(struct vine_manager *q, const char *event)
 
 	struct vine_regulator *r = q->regulator;
 
+	/* A CHECK gives the decision of its interval, which may differ from the reported signal. */
+	vine_resource_signal_t signal = !strcmp(event, "CHECK") ? r->decided : r->signal;
+
 	struct buffer B;
 	buffer_init(&B);
 	buffer_printf(&B,
-			"REGULATOR %s %s %d %d %d %d %.3f %.6f %.3f %.3f %.3f %.1f %d",
+			"REGULATOR %s %s %d %d %d %d %.3f %.6f %.3f %.3f %.3f %.1f %d %.1f",
 			event,
-			vine_resource_signal_string(r->signal),
+			vine_resource_signal_string(signal),
 			r->window,
 			r->window_target,
 			r->regions_in_flight,
@@ -400,7 +404,8 @@ void vine_txn_log_write_regulator(struct vine_manager *q, const char *event)
 			r->utilization,
 			r->blocked,
 			vine_regulator_window_cores(r),
-			r->drained);
+			r->drained,
+			vine_regulator_signal_interval(r));
 	vine_txn_log_write(q, buffer_tostring(&B));
 	buffer_free(&B);
 }

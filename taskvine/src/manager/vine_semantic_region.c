@@ -31,6 +31,9 @@ See the file COPYING for details.
 /* Automatic sample interval: this many mean gaps between results, at least the minimum. */
 #define VINE_REGULATOR_SAMPLE_GAPS 10
 #define VINE_REGULATOR_SAMPLE_MIN 60
+/* Automatic signal interval: the mean region span, within these bounds. */
+#define VINE_REGULATOR_SIGNAL_MIN 15
+#define VINE_REGULATOR_SIGNAL_MAX 300
 
 struct vine_regulator *vine_regulator_create(void)
 {
@@ -40,8 +43,11 @@ struct vine_regulator *vine_regulator_create(void)
 	r->saturation = 0.05;
 	r->idle = 0.25;
 	r->concurrency = 1;
-	r->signal_interval = 15;
+	r->signal_interval = 0;
+	r->signal_confirm = 2;
 	r->release = 1;
+	r->decided = VINE_RESOURCE_SIGNAL_OPTIMAL;
+	r->pending_signal = VINE_RESOURCE_SIGNAL_OPTIMAL;
 	r->signal = VINE_RESOURCE_SIGNAL_OPTIMAL;
 	return r;
 }
@@ -132,6 +138,22 @@ static double regulator_sample_interval(struct vine_regulator *r)
 	return MAX(VINE_REGULATOR_SAMPLE_MIN, VINE_REGULATOR_SAMPLE_GAPS * mean_gap);
 }
 
+/*
+A decision averaged over one region span covers a whole cycle of the regions'
+changing concurrency (such as a fan-out and its merge), instead of one phase.
+*/
+double vine_regulator_signal_interval(struct vine_regulator *r)
+{
+	if (r->signal_interval > 0)
+		return r->signal_interval;
+
+	if (r->spans < 1)
+		return VINE_REGULATOR_SIGNAL_MIN;
+
+	double mean_span = r->span_total / r->spans;
+	return MIN(VINE_REGULATOR_SIGNAL_MAX, MAX(VINE_REGULATOR_SIGNAL_MIN, mean_span));
+}
+
 /* Record a region that produced its result. */
 static void region_result(struct vine_manager *q, struct vine_semantic_region *region)
 {
@@ -144,6 +166,8 @@ static void region_result(struct vine_manager *q, struct vine_semantic_region *r
 	double span = 0;
 	if (region->time_first_dispatch > 0) {
 		span = ((double)(region->time_complete - region->time_first_dispatch)) / ONE_SECOND;
+		r->span_total += span;
+		r->spans++;
 	}
 
 	vine_txn_log_write_subgraph(q, region->name, "COMPLETE", region->work, span);
@@ -342,6 +366,12 @@ static void regulator_accumulate(struct vine_manager *q, timestamp_t now)
 	r->blocked_on_capacity = 0;
 }
 
+/* With no workers at all and work to do for most of the interval, the manager is starved. */
+static int regulator_starved(struct vine_regulator *r)
+{
+	return r->acc_time > 0 && r->acc_starved / r->acc_time >= 0.5;
+}
+
 /* Decide the resource signal from the averages of the interval that just ended. */
 static vine_resource_signal_t regulator_decide_signal(struct vine_regulator *r)
 {
@@ -353,8 +383,7 @@ static vine_resource_signal_t regulator_decide_signal(struct vine_regulator *r)
 
 	double avg_in_flight = r->acc_in_flight / r->acc_time;
 
-	/* With no workers at all and work to do, the manager is starved. */
-	if (r->acc_starved / r->acc_time >= 0.5) {
+	if (regulator_starved(r)) {
 		return VINE_RESOURCE_SIGNAL_UNDER;
 	}
 
@@ -464,19 +493,38 @@ void vine_regulator_update(struct vine_manager *q)
 		regulator_close_sample(q, now);
 	}
 
-	if (((double)(now - r->interval_start)) / ONE_SECOND < r->signal_interval)
+	if (((double)(now - r->interval_start)) / ONE_SECOND < vine_regulator_signal_interval(r))
 		return;
 
-	vine_resource_signal_t signal = regulator_decide_signal(r);
 	vine_resource_signal_t previous = r->signal;
-	r->signal = signal;
+	r->decided = regulator_decide_signal(r);
 
-	r->drained = signal == VINE_RESOURCE_SIGNAL_OVER ? regulator_drain_workers(q) : 0;
+	/*
+	The reported signal changes once signal_confirm consecutive decisions agree on
+	a new value, so a single interval that caught one phase of the regions does not
+	add or drain workers. A starved manager is reported at once.
+	*/
+	if (r->decided == r->signal) {
+		r->pending_count = 0;
+	} else {
+		if (r->decided == r->pending_signal && r->pending_count > 0) {
+			r->pending_count++;
+		} else {
+			r->pending_signal = r->decided;
+			r->pending_count = 1;
+		}
+		if (r->pending_count >= r->signal_confirm || regulator_starved(r)) {
+			r->signal = r->decided;
+			r->pending_count = 0;
+		}
+	}
+
+	r->drained = r->signal == VINE_RESOURCE_SIGNAL_OVER ? regulator_drain_workers(q) : 0;
 
 	vine_txn_log_write_regulator(q, "CHECK");
 
-	if (signal != previous) {
-		debug(D_VINE, "resource signal changed from %s to %s", vine_resource_signal_string(previous), vine_resource_signal_string(signal));
+	if (r->signal != previous) {
+		debug(D_VINE, "resource signal changed from %s to %s", vine_resource_signal_string(previous), vine_resource_signal_string(r->signal));
 		vine_txn_log_write_regulator(q, "SIGNAL");
 	}
 
@@ -547,4 +595,5 @@ void vine_regulator_to_jx(struct vine_manager *q, struct jx *j)
 	jx_insert_double(j, "subgraph_last_sample", r->last_sample);
 	jx_insert_double(j, "subgraph_lead_lag", r->lead_lag);
 	jx_insert_double(j, "subgraph_window_cores", vine_regulator_window_cores(r));
+	jx_insert_double(j, "subgraph_signal_interval", vine_regulator_signal_interval(r));
 }

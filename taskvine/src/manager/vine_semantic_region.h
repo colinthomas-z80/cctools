@@ -66,7 +66,8 @@ struct vine_regulator {
 	double saturation;      /* Cores are saturated when committed >= (1 - saturation) * total. */
 	double idle;            /* Cores are idle when free >= idle * total. */
 	int concurrency;        /* Default peak concurrency of a region. */
-	double signal_interval; /* Seconds between resource signal decisions. */
+	double signal_interval; /* Seconds between resource signal decisions. 0 means automatic. */
+	int signal_confirm;     /* Consecutive decisions needed to change the reported signal. */
 	int release;            /* Workers to drain at each over-allocated decision. */
 
 	/* Regulator state */
@@ -76,6 +77,8 @@ struct vine_regulator {
 	double work_complete; /* Total work of the regions that produced their result. */
 	timestamp_t time_first_result;
 	timestamp_t time_last_result;
+	double span_total; /* Seconds from first dispatch to result, summed over regions. */
+	int spans;         /* Regions counted in span_total. */
 
 	timestamp_t sample_start;
 	double sample_count; /* Results (possibly work-weighted) in the current sample. */
@@ -98,11 +101,17 @@ struct vine_regulator {
 	double utilization;      /* Committed / available cores over the last interval. */
 	double blocked;          /* Fraction of the last interval with a window task waiting for a worker. */
 	int drained;             /* Workers marked as draining at the last decision. */
-	vine_resource_signal_t signal;
+	vine_resource_signal_t decided;        /* Decision of the last interval. */
+	vine_resource_signal_t pending_signal; /* A decision differing from the reported signal... */
+	int pending_count;                     /* ...and how many consecutive intervals made it. */
+	vine_resource_signal_t signal;         /* Reported signal. */
 };
 
 struct vine_regulator *vine_regulator_create(void);
 void vine_regulator_delete(struct vine_regulator *r);
+
+/* Seconds between resource signal decisions, fixed or from the mean region span. */
+double vine_regulator_signal_interval(struct vine_regulator *r);
 
 /* Handle a task state change. Called from change_task_state. */
 void vine_regulator_task_submitted(struct vine_manager *q, struct vine_task *t);
