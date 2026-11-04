@@ -22,7 +22,10 @@ narrowed (above average) within [1, k]. The manager then reports a resource sign
 (under, optimal, over) in its status so that a vine_factory can adjust its workers.
 
 The signal is decided once per signal interval from time-weighted averages of core
-utilization and of the time window tasks spent waiting for a worker. The manager also
+utilization and of the time window tasks spent waiting for a worker. Saturated workers
+make the manager under-allocated when results come slower than the target: one result
+every mean region span / k, with the spans counted without the time regions waited
+for workers, so that a short pool does not set its own target. The manager also
 reports the cores the window can use, from the peak concurrency the application gives
 for each region (vine_set_semantic_concurrency), so a factory can size its first request.
 */
@@ -52,6 +55,8 @@ struct vine_semantic_region {
 	int tasks_submitted; /* Tasks ever submitted with this label. */
 	double cores_submitted; /* Cores requested by those tasks, counting 1 when unset. */
 	double work;         /* Core-seconds of the tasks retrieved so far. */
+	int blocked;         /* A ready task found no worker since the last accumulation. */
+	double time_blocked; /* Seconds after the first dispatch with a ready task waiting for a worker. */
 	timestamp_t time_first_dispatch;
 	timestamp_t time_complete;
 };
@@ -77,8 +82,9 @@ struct vine_regulator {
 	double work_complete; /* Total work of the regions that produced their result. */
 	timestamp_t time_first_result;
 	timestamp_t time_last_result;
-	double span_total; /* Seconds from first dispatch to result, summed over regions. */
-	int spans;         /* Regions counted in span_total. */
+	double span_total;    /* Seconds from first dispatch to result, summed over regions. */
+	double service_total; /* The same spans less the time each region waited for workers. */
+	int spans;            /* Regions counted in span_total and service_total. */
 
 	timestamp_t sample_start;
 	double sample_count; /* Results (possibly work-weighted) in the current sample. */
@@ -87,6 +93,7 @@ struct vine_regulator {
 	double rate_avg;     /* Average results per second since the first result. */
 	double lead_lag;     /* Sum of the deviations of each sample from the average. */
 	int last_sample_below;
+	int last_sample_behind; /* The last sample had fewer results than the target gap gives. */
 
 	/* Resource signal, from time-weighted averages over each signal interval. */
 	timestamp_t time_last_accumulate;
@@ -112,6 +119,9 @@ void vine_regulator_delete(struct vine_regulator *r);
 
 /* Seconds between resource signal decisions, fixed or from the mean region span. */
 double vine_regulator_signal_interval(struct vine_regulator *r);
+
+/* Seconds per result expected from k regions in flight, or 0 before the first span. */
+double vine_regulator_target_gap(struct vine_regulator *r);
 
 /* Handle a task state change. Called from change_task_state. */
 void vine_regulator_task_submitted(struct vine_manager *q, struct vine_task *t);

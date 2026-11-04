@@ -154,6 +154,20 @@ double vine_regulator_signal_interval(struct vine_regulator *r)
 	return MIN(VINE_REGULATOR_SIGNAL_MAX, MAX(VINE_REGULATOR_SIGNAL_MIN, mean_span));
 }
 
+/*
+With k regions in flight, each taking its span, a result is due every mean span / k
+(Little's law). The spans are taken without the time regions waited for workers, as
+waiting lengthens them in proportion to the shortage of workers, and the target would
+then follow whatever rate the workers already give.
+*/
+double vine_regulator_target_gap(struct vine_regulator *r)
+{
+	if (r->spans < 1 || r->service_total <= 0 || r->window_target < 1)
+		return 0;
+
+	return r->service_total / r->spans / r->window_target;
+}
+
 /* Record a region that produced its result. */
 static void region_result(struct vine_manager *q, struct vine_semantic_region *region)
 {
@@ -167,6 +181,7 @@ static void region_result(struct vine_manager *q, struct vine_semantic_region *r
 	if (region->time_first_dispatch > 0) {
 		span = ((double)(region->time_complete - region->time_first_dispatch)) / ONE_SECOND;
 		r->span_total += span;
+		r->service_total += MAX(0, span - region->time_blocked);
 		r->spans++;
 	}
 
@@ -298,6 +313,11 @@ void vine_regulator_blocked_on_capacity(struct vine_manager *q, struct vine_task
 		return;
 
 	r->blocked_on_capacity = 1;
+
+	struct vine_semantic_region *region = region_of_task(r, t, 0);
+	if (region) {
+		region->blocked = 1;
+	}
 }
 
 /* Close the current sample, and widen or narrow the window toward the average rate. */
@@ -317,6 +337,15 @@ static void regulator_close_sample(struct vine_manager *q, timestamp_t now)
 	r->last_sample = r->sample_count;
 	r->lead_lag += deviation;
 	r->last_sample_below = deviation < -deadband;
+
+	/* Without a target yet, falling below the average stands in for falling behind. */
+	double target_gap = vine_regulator_target_gap(r);
+	if (target_gap > 0) {
+		double due = interval / target_gap;
+		r->last_sample_behind = r->sample_count < due - sqrt(due);
+	} else {
+		r->last_sample_behind = r->last_sample_below;
+	}
 
 	if (deviation < -deadband) {
 		r->window = MIN(r->window + 1, r->window_target);
@@ -357,6 +386,17 @@ static void regulator_accumulate(struct vine_manager *q, timestamp_t now)
 
 	if (r->blocked_on_capacity) {
 		r->acc_blocked += dt;
+
+		char *name;
+		struct vine_semantic_region *region;
+		int iteration;
+		HASH_TABLE_ITERATE(r->regions, iteration, name, region)
+		{
+			if (region->blocked && region->time_first_dispatch > 0) {
+				region->time_blocked += dt;
+			}
+			region->blocked = 0;
+		}
 	}
 
 	if (s.total_cores < 1 && s.tasks_waiting > 0) {
@@ -397,7 +437,11 @@ static vine_resource_signal_t regulator_decide_signal(struct vine_regulator *r)
 	int saturated = r->utilization >= 1 - r->saturation && r->blocked >= VINE_REGULATOR_UNDER_BLOCKED;
 	int idle = 1 - r->utilization >= r->idle && r->blocked < VINE_REGULATOR_OVER_BLOCKED;
 
-	if (saturated && (no_results_yet || r->last_sample_below || window_open)) {
+	/*
+	Saturated workers are short when results lag the target, which follows from
+	the window and the spans, rather than the average, which follows the workers.
+	*/
+	if (saturated && (no_results_yet || r->last_sample_behind || window_open)) {
 		return VINE_RESOURCE_SIGNAL_UNDER;
 	}
 
@@ -596,4 +640,5 @@ void vine_regulator_to_jx(struct vine_manager *q, struct jx *j)
 	jx_insert_double(j, "subgraph_lead_lag", r->lead_lag);
 	jx_insert_double(j, "subgraph_window_cores", vine_regulator_window_cores(r));
 	jx_insert_double(j, "subgraph_signal_interval", vine_regulator_signal_interval(r));
+	jx_insert_double(j, "subgraph_target_gap", vine_regulator_target_gap(r));
 }
